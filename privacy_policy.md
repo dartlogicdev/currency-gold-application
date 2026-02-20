@@ -8,9 +8,8 @@
 Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie darüber, welche Daten die App "Money Exchanger" erfasst, wie diese verwendet werden und welche Rechte Sie haben.
 
 **Verantwortlicher:**  
-Sena Hasancebi  
-E-Mail: hasances@github.io  
-GitHub: https://github.com/hasances
+Money Exchanger Development  
+E-Mail: support@moneyexchanger.app
 
 ## 2. Welche Daten werden erfasst?
 
@@ -123,8 +122,7 @@ Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf zu aktualisieren. W
 
 Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 
-**E-Mail:** hasances@github.io  
-**GitHub:** https://github.com/hasances
+**E-Mail:** support@moneyexchanger.app
 
 ---
 
@@ -148,6 +146,6 @@ Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 
 **Your Rights:**
 - Delete all data by clearing app data in Android settings
-- Contact us for questions: hasances@github.io
+- Contact us for questions: support@moneyexchanger.app
 
 **Last Updated:** February 20, 2026

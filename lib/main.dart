@@ -8,6 +8,7 @@ import 'config.dart';
 import 'analytics_service.dart';
 import 'theme_service.dart';
 import 'settings_tab.dart';
+import 'haptic_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,9 @@ void main() async {
 
   // Tracke App-Start
   await AnalyticsService().incrementSessionCount();
+  
+  // Initialisiere HapticService
+  await HapticService().init();
 
   runApp(const MyApp());
 }

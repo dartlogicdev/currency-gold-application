@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
 import 'analytics_service.dart';
+import 'haptic_service.dart';
 
 class GoldItem {
   String coinName;
@@ -215,6 +216,9 @@ class _GoldTabState extends State<GoldTab> {
     saveCart();
     quantityController.text = '1';
     
+    // Haptic Feedback
+    HapticService().medium();
+    
     // Feedback SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -234,6 +238,9 @@ class _GoldTabState extends State<GoldTab> {
       );
       cart.removeAt(index);
     });
+
+    // Haptic Feedback
+    HapticService().light();
 
     // Tracke Entfernung
     AnalyticsService().trackCartItemRemoved(index);
@@ -259,6 +266,9 @@ class _GoldTabState extends State<GoldTab> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
+              
+              // Haptic Feedback - wichtige Aktion
+              HapticService().heavy();
               
               ScaffoldMessenger.of(context).removeCurrentSnackBar();
 

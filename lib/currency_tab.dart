@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
+import 'haptic_service.dart';
 
 // Währungsnamen
 const Map<String, String> currencyNames = {
@@ -163,6 +164,9 @@ class _CurrencyTabState extends State<CurrencyTab> {
       }
     });
     saveFavorites();
+    
+    // Haptic Feedback
+    HapticService().light();
     
     // Feedback SnackBar
     final currencyName = currencyNames[currency] ?? currency;

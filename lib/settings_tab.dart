@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'haptic_service.dart';
 
-class SettingsTab extends StatelessWidget {
+class SettingsTab extends StatefulWidget {
   final ThemeMode currentTheme;
   final Function(ThemeMode) onThemeChanged;
 
@@ -12,8 +13,41 @@ class SettingsTab extends StatelessWidget {
   });
 
   @override
+  State<SettingsTab> createState() => _SettingsTabState();
+}
+
+class _SettingsTabState extends State<SettingsTab> {
+  HapticLevel _hapticLevel = HapticLevel.all;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHapticLevel();
+  }
+
+  Future<void> _loadHapticLevel() async {
+    await HapticService().init();
+    setState(() {
+      _hapticLevel = HapticService().getLevel();
+    });
+  }
+
+  Future<void> _setHapticLevel(HapticLevel level) async {
+    await HapticService().setLevel(level);
+    setState(() {
+      _hapticLevel = level;
+    });
+    // Test-Feedback
+    if (level == HapticLevel.all) {
+      HapticService().light();
+    } else if (level == HapticLevel.important) {
+      HapticService().medium();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,9 +87,12 @@ class SettingsTab extends StatelessWidget {
                       ],
                     ),
                     value: ThemeMode.light,
-                    groupValue: currentTheme,
+                    groupValue: widget.currentTheme,
                     onChanged: (mode) {
-                      if (mode != null) onThemeChanged(mode);
+                      if (mode != null) {
+                        HapticService().selection();
+                        widget.onThemeChanged(mode);
+                      }
                     },
                   ),
                   
@@ -69,9 +106,12 @@ class SettingsTab extends StatelessWidget {
                       ],
                     ),
                     value: ThemeMode.dark,
-                    groupValue: currentTheme,
+                    groupValue: widget.currentTheme,
                     onChanged: (mode) {
-                      if (mode != null) onThemeChanged(mode);
+                      if (mode != null) {
+                        HapticService().selection();
+                        widget.onThemeChanged(mode);
+                      }
                     },
                   ),
                   
@@ -92,9 +132,106 @@ class SettingsTab extends StatelessWidget {
                       ),
                     ),
                     value: ThemeMode.system,
-                    groupValue: currentTheme,
+                    groupValue: widget.currentTheme,
                     onChanged: (mode) {
-                      if (mode != null) onThemeChanged(mode);
+                      if (mode != null) {
+                        HapticService().selection();
+                        widget.onThemeChanged(mode);
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          
+          const SizedBox(height: 16),
+          
+          // Haptic Feedback Einstellungen
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.vibration, size: 24),
+                      const SizedBox(width: 12),
+                      const Text(
+                        'Haptisches Feedback',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Alle
+                  RadioListTile<HapticLevel>(
+                    title: Row(
+                      children: [
+                        Icon(Icons.vibration, size: 20),
+                        const SizedBox(width: 12),
+                        const Text('Alle Aktionen'),
+                      ],
+                    ),
+                    subtitle: const Padding(
+                      padding: EdgeInsets.only(left: 32, top: 4),
+                      child: Text(
+                        'Vibration bei allen Interaktionen',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    value: HapticLevel.all,
+                    groupValue: _hapticLevel,
+                    onChanged: (level) {
+                      if (level != null) _setHapticLevel(level);
+                    },
+                  ),
+                  
+                  // Nur wichtige
+                  RadioListTile<HapticLevel>(
+                    title: Row(
+                      children: [
+                        Icon(Icons.notification_important, size: 20),
+                        const SizedBox(width: 12),
+                        const Text('Nur wichtige'),
+                      ],
+                    ),
+                    subtitle: const Padding(
+                      padding: EdgeInsets.only(left: 32, top: 4),
+                      child: Text(
+                        'Vibration nur bei wichtigen Aktionen',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    value: HapticLevel.important,
+                    groupValue: _hapticLevel,
+                    onChanged: (level) {
+                      if (level != null) _setHapticLevel(level);
+                    },
+                  ),
+                  
+                  // Aus
+                  RadioListTile<HapticLevel>(
+                    title: Row(
+                      children: [
+                        Icon(Icons.vibration_outlined, size: 20),
+                        const SizedBox(width: 12),
+                        const Text('Aus'),
+                      ],
+                    ),
+                    subtitle: const Padding(
+                      padding: EdgeInsets.only(left: 32, top: 4),
+                      child: Text(
+                        'Keine Vibration',
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                    value: HapticLevel.off,
+                    groupValue: _hapticLevel,
+                    onChanged: (level) {
+                      if (level != null) _setHapticLevel(level);
                     },
                   ),
                 ],
@@ -130,7 +267,7 @@ class SettingsTab extends StatelessWidget {
             ),
           ),
           
-          const Spacer(),
+          const SizedBox(height: 24),
           
           // Version Info
           FutureBuilder<PackageInfo>(
