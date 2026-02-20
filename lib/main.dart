@@ -6,6 +6,8 @@ import 'affiliate_tab.dart';
 import 'debug_mode_check.dart';
 import 'config.dart';
 import 'analytics_service.dart';
+import 'theme_service.dart';
+import 'settings_tab.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,20 +24,67 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  ThemeMode _themeMode = ThemeMode.system;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final theme = await ThemeService().getThemeMode();
+    setState(() {
+      _themeMode = theme;
+    });
+  }
+
+  void _changeTheme(ThemeMode mode) {
+    setState(() {
+      _themeMode = mode;
+    });
+    ThemeService().setThemeMode(mode);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const HomePage(),
+      themeMode: _themeMode,
+      theme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.light,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.light,
+        ),
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: HomePage(onThemeChanged: _changeTheme, currentTheme: _themeMode),
     );
   }
 }
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(ThemeMode) onThemeChanged;
+  final ThemeMode currentTheme;
+  
+  const HomePage({super.key, required this.onThemeChanged, required this.currentTheme});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -50,7 +99,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final showDebug = Config.isDevelopment;
     final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
     
-    final names = ['Currency', 'Gold'];
+    final names = ['Currency', 'Gold', 'Settings'];
     if (showChartTab) names.add('Chart');
     if (showDebug) names.add('Debug');
     return names;
@@ -64,7 +113,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final showDebug = Config.isDevelopment;
     final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
     
-    int tabCount = 2; // Currency + Gold
+    int tabCount = 3; // Currency + Gold + Settings
     if (showChartTab) tabCount++;
     if (showDebug) tabCount++;
     
@@ -103,6 +152,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           tabs: [
             const Tab(text: 'Currency'),
             const Tab(text: 'Gold'),
+            const Tab(icon: Icon(Icons.settings), text: 'Einstellungen'),
             if (showChartTab) const Tab(text: 'Chart'),
             if (showPartnerTab) const Tab(text: 'Partner'),
             if (showDebug) const Tab(text: 'Debug'),
@@ -114,6 +164,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         children: [
           const CurrencyTab(),
           const GoldTab(),
+          SettingsTab(
+            currentTheme: widget.currentTheme,
+            onThemeChanged: widget.onThemeChanged,
+          ),
           if (showChartTab) ChartTab(),
           if (showPartnerTab) AffiliateTab(),
           if (showDebug) const DebugModeCheck(),
