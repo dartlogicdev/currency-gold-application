@@ -7,14 +7,14 @@ import 'analytics_service.dart';
 
 class GoldItem {
   String coinName;
-  int quantity;
+  double quantity;
 
   GoldItem({required this.coinName, required this.quantity});
 
   Map<String, dynamic> toJson() => {'coinName': coinName, 'quantity': quantity};
 
   factory GoldItem.fromJson(Map<String, dynamic> json) =>
-      GoldItem(coinName: json['coinName'], quantity: json['quantity']);
+      GoldItem(coinName: json['coinName'], quantity: (json['quantity'] as num).toDouble());
 }
 
 class GoldTab extends StatefulWidget {
@@ -195,7 +195,7 @@ class _GoldTabState extends State<GoldTab> {
   /* ------------------ Logik ------------------ */
 
   void addToCart() {
-    final qty = int.tryParse(quantityController.text) ?? 1;
+    final qty = double.tryParse(quantityController.text) ?? 1.0;
 
     setState(() {
       final existing = cart.where((e) => e.coinName == selectedCoin).toList();
@@ -483,7 +483,7 @@ class _GoldTabState extends State<GoldTab> {
                 width: 120,
                 child: TextField(
                   controller: quantityController,
-                  keyboardType: TextInputType.number,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: const InputDecoration(
                     labelText: 'Anzahl',
                     border: OutlineInputBorder(),
@@ -533,7 +533,7 @@ class _GoldTabState extends State<GoldTab> {
                   child: Card(
                     child: ListTile(
                       title: Text(item.coinName),
-                      subtitle: Text('Anzahl: ${item.quantity}'),
+                      subtitle: Text('Anzahl: ${item.quantity % 1 == 0 ? item.quantity.toInt() : item.quantity}'),
                       trailing: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
