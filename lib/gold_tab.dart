@@ -214,6 +214,15 @@ class _GoldTabState extends State<GoldTab> {
 
     saveCart();
     quantityController.text = '1';
+    
+    // Feedback SnackBar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$selectedCoin zum Warenkorb hinzugefügt'),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   void removeItem(int index) {
@@ -236,17 +245,38 @@ class _GoldTabState extends State<GoldTab> {
   void clearCart() {
     if (cart.isEmpty) return;
 
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    // Bestätigungsdialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Warenkorb leeren?'),
+        content: Text('Möchtest du wirklich alle ${cart.length} Einträge entfernen?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Abbrechen'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              
+              ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
-    setState(() {
-      undoSnapshot = List.from(
-        cart.map((e) => GoldItem(coinName: e.coinName, quantity: e.quantity)),
-      );
-      cart.clear();
-    });
+              setState(() {
+                undoSnapshot = List.from(
+                  cart.map((e) => GoldItem(coinName: e.coinName, quantity: e.quantity)),
+                );
+                cart.clear();
+              });
 
-    saveCart();
-    showUndoSnackBar('Alle Einträge entfernt');
+              saveCart();
+              showUndoSnackBar('Alle Einträge entfernt');
+            },
+            child: const Text('Leeren', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   void undo() {
@@ -561,6 +591,25 @@ class _GoldTabState extends State<GoldTab> {
             'Gesamt Händler: ${totalDealer.toStringAsFixed(2)} $selectedCurrency',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
+          
+          const SizedBox(height: 16),
+          
+          // "Alle entfernen" Button
+          if (cart.isNotEmpty)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: clearCart,
+                icon: const Icon(Icons.delete_sweep, color: Colors.red),
+                label: const Text(
+                  'Alle entfernen',
+                  style: TextStyle(color: Colors.red),
+                ),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
         ],
       ),
         ),

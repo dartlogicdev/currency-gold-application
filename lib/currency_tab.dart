@@ -153,14 +153,30 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   void toggleFavorite(String currency) {
+    final wasInFavorites = favorites.contains(currency);
+    
     setState(() {
-      if (favorites.contains(currency)) {
+      if (wasInFavorites) {
         favorites.remove(currency);
       } else {
         favorites.add(currency);
       }
     });
     saveFavorites();
+    
+    // Feedback SnackBar
+    final currencyName = currencyNames[currency] ?? currency;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          wasInFavorites 
+            ? '$currencyName aus Favoriten entfernt' 
+            : '$currencyName zu Favoriten hinzugefügt'
+        ),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   Future<void> loadRates() async {
