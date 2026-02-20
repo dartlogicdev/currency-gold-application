@@ -305,6 +305,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
       title: Text(
         '$currency - $fullName',
         style: TextStyle(
+          fontSize: 15,
           fontWeight: isFavorite ? FontWeight.bold : FontWeight.normal,
         ),
       ),
@@ -320,6 +321,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
               Text(
                 converted.toStringAsFixed(2),
                 style: TextStyle(
+                  fontSize: 17,
                   fontWeight: isFavorite ? FontWeight.w600 : FontWeight.normal,
                 ),
               ),
