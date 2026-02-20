@@ -35,6 +35,7 @@ class _GoldTabState extends State<GoldTab> {
   bool? isCached;
   int? cacheAge;
   String? lastFetchTime;
+  bool isOffline = false; // Neue Variable: Offline-Status
 
   final TextEditingController quantityController = TextEditingController(
     text: '1',
@@ -49,17 +50,58 @@ class _GoldTabState extends State<GoldTab> {
   void initState() {
     super.initState();
     loadCart(); // Muss VOR fetchGold() aufgerufen werden
+    loadGoldFromCache(); // Gecachte Daten laden
     fetchGold();
   }
 
-  /* ------------------ API ------------------ */
+  /* ------------------ API & Cache ------------------ */
+
+  Future<void> loadGoldFromCache() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cachedData = prefs.getString('gold_data');
+    final cachedTime = prefs.getString('gold_cache_time');
+    
+    if (cachedData != null) {
+      try {
+        final data = jsonDecode(cachedData);
+        setState(() {
+          coins = Map<String, dynamic>.from(data['coins']);
+          if (coins.isNotEmpty) {
+            selectedCoin = coins.keys.first;
+          }
+          lastFetchTime = cachedTime;
+          loading = false;
+        });
+        debugPrint('[GoldTab] Gecachte Daten geladen');
+      } catch (e) {
+        debugPrint('[GoldTab] Fehler beim Laden gecachter Daten: $e');
+      }
+    }
+  }
+
+  Future<void> saveGoldToCache(Map<String, dynamic> data) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('gold_data', jsonEncode(data));
+    await prefs.setString('gold_cache_time', DateTime.now().toString().substring(0, 19));
+    debugPrint('[GoldTab] Daten im Cache gespeichert');
+  }
 
   Future<void> fetchGold() async {
+    // Reset offline status beim Start des Fetch
+    setState(() {
+      loading = true;
+      if (isOffline) isOffline = false; // Offline-Banner sofort ausblenden
+    });
+    
     try {
       final res = await http
           .get(Uri.parse(Config.goldEndpoint))
           .timeout(Config.requestTimeout);
       final data = jsonDecode(res.body);
+      
+      // Cache aktualisieren
+      await saveGoldToCache(data);
+      
       setState(() {
         coins = Map<String, dynamic>.from(data['coins']);
         selectedCoin = coins.keys.first;
@@ -69,22 +111,28 @@ class _GoldTabState extends State<GoldTab> {
         cacheAge = data['cacheAge'] as int?;
         lastFetchTime = DateTime.now().toString().substring(0, 19);
         
+        isOffline = false; // Online-Modus bestätigen
         loading = false;
       });
     } catch (e) {
       debugPrint('Gold Fetch Fehler: $e');
-      setState(() => loading = false);
+      setState(() {
+        loading = false;
+        // Wenn Daten vorhanden sind (aus Cache), setze Offline-Modus
+        if (coins.isNotEmpty) {
+          isOffline = true;
+        }
+      });
 
-      // Zeige Fehler-Snackbar
-      if (mounted) {
+      // Zeige user-freundliche Fehlermeldung nur wenn keine gecachten Daten vorhanden
+      if (mounted && coins.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Fehler beim Laden der Goldpreise: ${e.toString()}'),
+            content: const Text('Keine Internetverbindung. Bitte prüfe deine Verbindung.'),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
               label: 'Erneut versuchen',
               onPressed: () {
-                setState(() => loading = true);
                 fetchGold();
               },
             ),
@@ -253,6 +301,50 @@ class _GoldTabState extends State<GoldTab> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
+              // Offline-Warning Banner
+              if (isOffline)
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade300, width: 2),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.cloud_off,
+                        color: Colors.orange.shade900,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Offline-Modus',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.orange.shade900,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Keine Verbindung zum Server. Es werden gespeicherte Daten angezeigt, die möglicherweise veraltet sind.',
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: Colors.orange.shade800,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               // Daten-Status Info (wie bei Currency-Tab)
           if (isCached != null || lastFetchTime != null)
             Container(

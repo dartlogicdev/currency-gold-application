@@ -112,6 +112,7 @@ class _CurrencyTabState extends State<CurrencyTab> {
   String? lastUpdateDate;
   bool? isCached;
   int? cacheAge;
+  bool isOffline = false; // Neue Variable: Offline-Status
 
   // Favoriten (dynamisch, persistent)
   Set<String> favorites = {'EUR', 'TRY', 'USD', 'GBP', 'CHF'};
@@ -181,6 +182,13 @@ class _CurrencyTabState extends State<CurrencyTab> {
   }
 
   Future<void> fetchRates() async {
+    // Reset offline status beim Start des Fetch
+    if (isOffline) {
+      setState(() {
+        isOffline = false; // Offline-Banner sofort ausblenden
+      });
+    }
+    
     try {
       final response = await http
           .get(Uri.parse(Config.ratesEndpoint))
@@ -203,6 +211,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
           base = rates.containsKey(base)
               ? base
               : (rates.keys.isNotEmpty ? rates.keys.first : 'EUR');
+          
+          isOffline = false; // Online-Modus bestätigen
           loading = false;
         });
 
@@ -211,7 +221,23 @@ class _CurrencyTabState extends State<CurrencyTab> {
       }
     } catch (e) {
       debugPrint('Currency Fetch Fehler: $e');
-      setState(() => loading = false);
+      setState(() {
+        loading = false;
+        // Wenn Daten vorhanden sind (aus Cache), setze Offline-Modus
+        if (rates.isNotEmpty) {
+          isOffline = true;
+        }
+      });
+      
+      // Zeige user-freundliche Fehlermeldung nur wenn keine gecachten Daten vorhanden
+      if (mounted && rates.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Keine Internetverbindung. Bitte prüfe deine Verbindung.'),
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 
@@ -332,6 +358,50 @@ class _CurrencyTabState extends State<CurrencyTab> {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
+          // Offline-Warning Banner
+          if (isOffline)
+            Container(
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.orange.shade300, width: 2),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.cloud_off,
+                    color: Colors.orange.shade900,
+                    size: 24,
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Offline-Modus',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            color: Colors.orange.shade900,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Keine Verbindung zum Server. Es werden gespeicherte Daten angezeigt, die möglicherweise veraltet sind.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.orange.shade800,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
           // Daten-Status Info (neu!)
           if (lastUpdateDate != null || isCached != null)
             Container(
