@@ -3,7 +3,7 @@ class Config {
   // Environment Detection
   static const bool isDevelopment = bool.fromEnvironment(
     'DEVELOPMENT',
-    defaultValue: true,
+    defaultValue: false,
   );
 
   // Server URL - automatisch je nach Environment

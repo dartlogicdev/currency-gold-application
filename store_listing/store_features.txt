@@ -1,0 +1,8 @@
+✓ 40+ Währungen mit EZB-Kursen
+✓ Gold-Preisrechner mit Warenkorb
+✓ Favoriten-System
+✓ Dark Mode
+✓ Offline-Modus
+✓ 100% werbefrei
+✓ DSGVO-konform
+✓ Keine Registrierung
