@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 import 'config.dart';
 import 'analytics_service.dart';
 import 'haptic_service.dart';
@@ -285,6 +286,58 @@ class _GoldTabState extends State<GoldTab> {
             child: const Text('Leeren', style: TextStyle(color: Colors.red)),
           ),
         ],
+      ),
+    );
+  }
+
+  void shareCart() {
+    if (cart.isEmpty) return;
+
+    // Warenkorb als Text formatieren
+    final buffer = StringBuffer();
+    buffer.writeln('🛒 Mein Gold-Kauf:\n');
+
+    double totalSpot = 0;
+    double totalDealer = 0;
+
+    for (var item in cart) {
+      final coinData = coins[item.coinName];
+      final weight = coinData?['weight'] ?? 1.0;
+      final data = coinData?[selectedCurrency] ?? {};
+      final spot = data['spot'] ?? 0.0;
+
+      final grams = item.quantity * weight;
+      final spotTotal = (spot / weight) * grams;
+      final dealerTotal = spotTotal * 1.04;
+
+      totalSpot += spotTotal;
+      totalDealer += dealerTotal;
+
+      final quantityStr = item.quantity % 1 == 0 
+          ? item.quantity.toInt().toString() 
+          : item.quantity.toStringAsFixed(2);
+
+      buffer.writeln('• ${item.coinName}: ${quantityStr}x');
+      buffer.writeln('  Spot: ${spotTotal.toStringAsFixed(2)} $selectedCurrency');
+      buffer.writeln('  Händler: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency\n');
+    }
+
+    buffer.writeln('━━━━━━━━━━━━━━━━');
+    buffer.writeln('Gesamt Spot: ${totalSpot.toStringAsFixed(2)} $selectedCurrency');
+    buffer.writeln('Gesamt Händler: ${totalDealer.toStringAsFixed(2)} $selectedCurrency');
+    buffer.writeln('\n📱 Erstellt mit Currency Gold App');
+
+    // Haptic Feedback
+    HapticService().selection();
+
+    // Share
+    Share.share(buffer.toString(), subject: 'Mein Gold-Warenkorb');
+
+    // Feedback
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Warenkorb geteilt'),
+        duration: Duration(seconds: 2),
       ),
     );
   }
@@ -617,6 +670,22 @@ class _GoldTabState extends State<GoldTab> {
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.red),
+                ),
+              ),
+            ),
+          
+          const SizedBox(height: 12),
+          
+          // "Teilen" Button
+          if (cart.isNotEmpty)
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: shareCart,
+                icon: const Icon(Icons.share),
+                label: const Text('Warenkorb teilen'),
+                style: OutlinedButton.styleFrom(
+                  side: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),

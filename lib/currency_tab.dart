@@ -120,6 +120,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
   final TextEditingController amountController = TextEditingController(
     text: '1',
   );
+  final TextEditingController searchController = TextEditingController();
+  String searchQuery = '';
 
   @override
   void initState() {
@@ -130,11 +132,17 @@ class _CurrencyTabState extends State<CurrencyTab> {
       const Duration(minutes: 5),
       (_) => fetchRates(),
     );
+    searchController.addListener(() {
+      setState(() {
+        searchQuery = searchController.text.toLowerCase();
+      });
+    });
   }
 
   @override
   void dispose() {
     updateTimer?.cancel();
+    searchController.dispose();
     super.dispose();
   }
 
@@ -368,6 +376,25 @@ class _CurrencyTabState extends State<CurrencyTab> {
     // Restliche Währungen alphabetisch
     final otherRates =
         rates.keys.where((c) => !displayFavorites.contains(c)).toList()..sort();
+    
+    // Suchfilter anwenden
+    final filteredFavorites = searchQuery.isEmpty
+        ? displayFavorites
+        : displayFavorites.where((currency) {
+            final query = searchQuery.toLowerCase();
+            final currencyLower = currency.toLowerCase();
+            final currencyName = currencyNames[currency]?.toLowerCase() ?? '';
+            return currencyLower.contains(query) || currencyName.contains(query);
+          }).toList();
+    
+    final filteredOtherRates = searchQuery.isEmpty
+        ? otherRates
+        : otherRates.where((currency) {
+            final query = searchQuery.toLowerCase();
+            final currencyLower = currency.toLowerCase();
+            final currencyName = currencyNames[currency]?.toLowerCase() ?? '';
+            return currencyLower.contains(query) || currencyName.contains(query);
+          }).toList();
 
     // Alle Items für Dropdown
     final allItems = [...displayFavorites, ...otherRates];
@@ -518,6 +545,27 @@ class _CurrencyTabState extends State<CurrencyTab> {
               ),
             ),
           
+          // Suchfeld
+          TextField(
+            controller: searchController,
+            decoration: InputDecoration(
+              labelText: 'Währung suchen...',
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: searchQuery.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        searchController.clear();
+                      },
+                    )
+                  : null,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          
           // Dropdown Basiswährung
           Row(
             children: [
@@ -562,11 +610,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
           const SizedBox(height: 16),
 
           // Favoriten anzeigen
-          ...displayFavorites.map((c) => rateRow(c)),
-          if (displayFavorites.isNotEmpty) const Divider(height: 24),
+          ...filteredFavorites.map((c) => rateRow(c)),
+          if (filteredFavorites.isNotEmpty && filteredOtherRates.isNotEmpty) const Divider(height: 24),
 
           // Restliche Währungen
-          ...otherRates.map((c) => rateRow(c)),
+          ...filteredOtherRates.map((c) => rateRow(c)),
         ],
       ),
     );
