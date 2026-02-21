@@ -26,7 +26,10 @@ class GoldTab extends StatefulWidget {
   State<GoldTab> createState() => _GoldTabState();
 }
 
-class _GoldTabState extends State<GoldTab> {
+class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   Map<String, dynamic> coins = {};
   String selectedCoin = '';
   String selectedCurrency = 'USD';
@@ -51,8 +54,12 @@ class _GoldTabState extends State<GoldTab> {
   @override
   void initState() {
     super.initState();
-    loadCart(); // Muss VOR fetchGold() aufgerufen werden
-    loadGoldFromCache(); // Gecachte Daten laden
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await loadCart(); // Muss VOR fetchGold() aufgerufen werden
+    await loadGoldFromCache(); // Gecachte Daten laden
     fetchGold();
   }
 
@@ -164,33 +171,36 @@ class _GoldTabState extends State<GoldTab> {
   }
 
   Future<void> loadCart() async {
-    final prefs = await SharedPreferences.getInstance();
-    final cartJson = prefs.getString('gold_cart');
-    
-    debugPrint('[GoldTab] Lade Warenkorb... Daten vorhanden: ${cartJson != null}');
-    
-    if (cartJson != null && cartJson.isNotEmpty) {
-      try {
-        final List<dynamic> decoded = jsonDecode(cartJson);
-        final loadedCart = decoded.map((e) => GoldItem.fromJson(e as Map<String, dynamic>)).toList();
-        
-        if (mounted) {
-          setState(() {
-            cart = loadedCart;
-          });
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cartJson = prefs.getString('gold_cart');
+      
+      debugPrint('[GoldTab] Lade Warenkorb... Daten vorhanden: ${cartJson != null}');
+      debugPrint('[GoldTab] Raw JSON: $cartJson');
+      
+      if (cartJson != null && cartJson.isNotEmpty) {
+        try {
+          final List<dynamic> decoded = jsonDecode(cartJson);
+          final loadedCart = decoded.map((e) => GoldItem.fromJson(e as Map<String, dynamic>)).toList();
+          
+          // Wichtig: Direkt den cart setzen, nicht in setState
+          cart = loadedCart;
+          
+          debugPrint('[GoldTab] Warenkorb erfolgreich geladen: ${loadedCart.length} Items');
+          for (var item in loadedCart) {
+            debugPrint('[GoldTab]   - ${item.coinName}: ${item.quantity}x');
+          }
+        } catch (e) {
+          debugPrint('[GoldTab] Fehler beim Laden des Warenkorbs: $e');
+          debugPrint('[GoldTab] Fehlerhafte Daten: $cartJson');
+          // Bei Fehler: Warenkorb zurücksetzen
+          await prefs.remove('gold_cart');
         }
-        debugPrint('[GoldTab] Warenkorb erfolgreich geladen: ${loadedCart.length} Items');
-        for (var item in loadedCart) {
-          debugPrint('[GoldTab]   - ${item.coinName}: ${item.quantity}x');
-        }
-      } catch (e) {
-        debugPrint('[GoldTab] Fehler beim Laden des Warenkorbs: $e');
-        debugPrint('[GoldTab] Fehlerhafte Daten: $cartJson');
-        // Bei Fehler: Warenkorb zurücksetzen
-        await prefs.remove('gold_cart');
+      } else {
+        debugPrint('[GoldTab] Kein gespeicherter Warenkorb gefunden');
       }
-    } else {
-      debugPrint('[GoldTab] Kein gespeicherter Warenkorb gefunden');
+    } catch (e) {
+      debugPrint('[GoldTab] Fehler beim Zugriff auf SharedPreferences: $e');
     }
   }
 
@@ -369,6 +379,8 @@ class _GoldTabState extends State<GoldTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
     if (loading) return const Center(child: CircularProgressIndicator());
 
     double totalSpot = 0;
@@ -462,12 +474,11 @@ class _GoldTabState extends State<GoldTab> {
                       Expanded(
                         child: Text(
                           isCached == true
-                              ? 'Daten aus Cache (aktualisiert in ${(600 - (cacheAge ?? 0))}s)'
-                              : 'Frische Goldpreis-Daten vom Server',
+                              ? 'Cache (update in ${(600 - (cacheAge ?? 0))}s)'
+                              : 'Server-Daten (Spot + Händler)',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             color: Colors.amber.shade700,
-                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -491,41 +502,6 @@ class _GoldTabState extends State<GoldTab> {
                       ),
                     ],
                   ),
-                  if (lastFetchTime != null) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.access_time, size: 12, color: Colors.amber.shade600),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Zuletzt aktualisiert: ${lastFetchTime!.substring(11, 19)}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.amber.shade800,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '💰 Spot-Preis: Aktueller Marktpreis • Händler: +4% Aufschlag',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade700,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '↓ Ziehen zum Aktualisieren oder Refresh-Button nutzen',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade600,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),

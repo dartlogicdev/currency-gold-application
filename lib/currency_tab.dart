@@ -102,7 +102,10 @@ class CurrencyTab extends StatefulWidget {
   State<CurrencyTab> createState() => _CurrencyTabState();
 }
 
-class _CurrencyTabState extends State<CurrencyTab> {
+class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   Map<String, double> rates = {};
   Map<String, double> previousRates = {};
   String base = 'EUR';
@@ -358,6 +361,8 @@ class _CurrencyTabState extends State<CurrencyTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
     if (loading) return const Center(child: CircularProgressIndicator());
     if (rates.isEmpty)
       return const Center(child: Text("Keine Währungen verfügbar"));
@@ -475,12 +480,11 @@ class _CurrencyTabState extends State<CurrencyTab> {
                       Expanded(
                         child: Text(
                           isCached == true
-                              ? 'Daten aus Cache (aktualisiert in ${(300 - (cacheAge ?? 0))}s)'
-                              : 'Frische Daten vom Server',
+                              ? 'Cache (update in ${(300 - (cacheAge ?? 0))}s) • EZB ${lastUpdateDate ?? ""}'
+                              : 'Server-Daten • EZB ${lastUpdateDate ?? ""}',
                           style: TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             color: Colors.blue.shade700,
-                            fontWeight: FontWeight.w500,
                           ),
                         ),
                       ),
@@ -506,41 +510,6 @@ class _CurrencyTabState extends State<CurrencyTab> {
                       ),
                     ],
                   ),
-                  if (lastUpdateDate != null) ...[
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.calendar_today, size: 12, color: Colors.blue.shade600),
-                        const SizedBox(width: 6),
-                        Text(
-                          'EZB-Referenzkurse vom: $lastUpdateDate',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.blue.shade800,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      '💡 EZB publiziert neue Kurse werktags ~15:00-16:00 CET',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade700,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '↓ Ziehen zum Aktualisieren oder Refresh-Button nutzen',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey.shade600,
-                        fontStyle: FontStyle.italic,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
