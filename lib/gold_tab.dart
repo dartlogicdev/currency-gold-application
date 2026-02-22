@@ -220,7 +220,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
     // Tracke Warenkorb-Hinzufügung
     final coinData = coins[selectedCoin];
-    final weight = (coinData?['weight'] ?? 1.0) as double;
+    final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
     final grams = qty * weight;
     AnalyticsService().trackCartItemAdded(grams, selectedCurrency);
 
@@ -312,9 +312,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
     for (var item in cart) {
       final coinData = coins[item.coinName];
-      final weight = coinData?['weight'] ?? 1.0;
+      final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
       final data = coinData?[selectedCurrency] ?? {};
-      final spot = data['spot'] ?? 0.0;
+      final spot = ((data['spot'] ?? 0.0) as num).toDouble();
 
       final grams = item.quantity * weight;
       final spotTotal = (spot / weight) * grams;
@@ -388,9 +388,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
     for (var item in cart) {
       final coinData = coins[item.coinName];
-      final weight = coinData?['weight'] ?? 1.0;
+      final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
       final data = coinData?[selectedCurrency] ?? {};
-      final spot = data['spot'] ?? 0.0;
+      final spot = ((data['spot'] ?? 0.0) as num).toDouble();
 
       final grams = item.quantity * weight;
       final spotTotal = (spot / weight) * grams;
@@ -581,9 +581,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             itemBuilder: (context, index) {
               final item = cart[index];
               final coinData = coins[item.coinName];
-              final weight = coinData?['weight'] ?? 1.0;
+              final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
               final data = coinData?[selectedCurrency] ?? {};
-              final spot = data['spot'] ?? 0.0;
+              final spot = ((data['spot'] ?? 0.0) as num).toDouble();
 
               final grams = item.quantity * weight;
               final spotTotal = (spot / weight) * grams;

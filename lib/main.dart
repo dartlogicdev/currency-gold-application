@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'currency_tab.dart';
 import 'gold_tab.dart';
-import 'chart_tab.dart';
-import 'affiliate_tab.dart';
+// import 'chart_tab.dart'; // TODO: Aktivieren wenn Charts produktionsreif
+// import 'affiliate_tab.dart'; // TODO: Aktivieren für V2 mit Affiliate
 import 'debug_mode_check.dart';
 import 'config.dart';
 import 'analytics_service.dart';
@@ -101,10 +101,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   // Dynamische Tab-Namen basierend auf sichtbaren Tabs
   List<String> get _tabNames {
     final showDebug = Config.isDevelopment;
-    final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
+    // final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
     
     final names = ['Currency', 'Gold', 'Settings'];
-    if (showChartTab) names.add('Chart');
+    // if (showChartTab) names.add('Chart');
     if (showDebug) names.add('Debug');
     return names;
   }
@@ -115,10 +115,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     
     // Anzahl Tabs hängt von Environment ab
     final showDebug = Config.isDevelopment;
-    final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
+    // final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
     
     int tabCount = 3; // Currency + Gold + Settings
-    if (showChartTab) tabCount++;
+    // if (showChartTab) tabCount++;
     if (showDebug) tabCount++;
     
     _tabController = TabController(length: tabCount, vsync: this);
@@ -145,8 +145,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     // Anzahl Tabs hängt von Environment ab
     final showDebug = Config.isDevelopment;
-    final showPartnerTab = false; // TODO: Aktivieren für V2 mit Affiliate
-    final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
+    // final showPartnerTab = false; // TODO: Aktivieren für V2 mit Affiliate
+    // final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
 
     return Scaffold(
       appBar: AppBar(
@@ -157,8 +157,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             const Tab(text: 'Currency'),
             const Tab(text: 'Gold'),
             const Tab(icon: Icon(Icons.settings), text: 'Einstellungen'),
-            if (showChartTab) const Tab(text: 'Chart'),
-            if (showPartnerTab) const Tab(text: 'Partner'),
+            // if (showChartTab) const Tab(text: 'Chart'),
+            // if (showPartnerTab) const Tab(text: 'Partner'),
             if (showDebug) const Tab(text: 'Debug'),
           ],
         ),
@@ -172,8 +172,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             currentTheme: widget.currentTheme,
             onThemeChanged: widget.onThemeChanged,
           ),
-          if (showChartTab) ChartTab(),
-          if (showPartnerTab) AffiliateTab(),
+          // if (showChartTab) ChartTab(),
+          // if (showPartnerTab) AffiliateTab(),
           if (showDebug) const DebugModeCheck(),
         ],
       ),

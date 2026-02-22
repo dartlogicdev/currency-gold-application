@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'config.dart';
 import 'analytics_service.dart';
-import 'package:intl/intl.dart';
 
 class DebugModeCheck extends StatefulWidget {
   const DebugModeCheck({super.key});
