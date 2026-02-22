@@ -290,7 +290,7 @@ app.get('/gold', async (req, res) => {
     // Fallback-Testwerte als letzte Option
     console.log('Using fallback test values');
     const testRates = { USD: 1, EUR: 0.93, TRY: 32 };
-    const testPricePerGramUSD = 59;
+    const testPricePerGramUSD = 90; // ~2800 USD/oz ≈ 90 USD/g (aktualisiert Feb 2026)
 
     const fallbackResult = {};
     for (const [coin, data] of Object.entries(coins)) {
