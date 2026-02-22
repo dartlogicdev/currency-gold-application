@@ -132,7 +132,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     loadFavorites();
     loadRates();
     updateTimer = Timer.periodic(
-      const Duration(minutes: 5),
+      const Duration(hours: 2), // Auf 2h erhöht - Server cached dynamisch
       (_) => fetchRates(),
     );
     searchController.addListener(() {

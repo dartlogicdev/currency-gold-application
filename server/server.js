@@ -11,10 +11,30 @@ app.use(cors());
 // ==================== KONFIGURATION ====================
 const GOLD_API_KEY = process.env.GOLD_API_KEY;
 const PORT = process.env.PORT || 3000;
-const CACHE_DURATION_MS = 5 * 60 * 1000; // 5 Minuten Cache
-const GOLD_CACHE_DURATION_MS = 10 * 60 * 1000; // 10 Minuten für Gold
+const GOLD_CACHE_DURATION_MS = 60 * 60 * 1000; // 1 Stunde für Gold
 const HISTORY_FILE = path.join(__dirname, 'gold_history.json');
 const PREMIUM_PERCENT = 4;
+
+// Dynamischer Currency Cache: 5 Min während EZB-Update (15-17 Uhr CET), sonst 2h
+function getCurrencyCacheDuration() {
+  const now = new Date();
+  const hour = now.getUTCHours();
+  const day = now.getUTCDay(); // 0=Sonntag, 6=Samstag
+  
+  // Wochenende: Immer langer Cache (EZB macht nichts)
+  if (day === 0 || day === 6) {
+    return 2 * 60 * 60 * 1000; // 2 Stunden
+  }
+  
+  // Werktags 15-17 Uhr CET (UTC+1 Winter, UTC+2 Sommer)
+  // Näherung: 14-16 UTC (passt für beide)
+  if (hour >= 14 && hour < 16) {
+    return 5 * 60 * 1000; // 5 Minuten
+  }
+  
+  // Sonst: Langer Cache
+  return 2 * 60 * 60 * 1000; // 2 Stunden
+}
 
 // ==================== IN-MEMORY CACHE ====================
 const cache = {
@@ -114,14 +134,17 @@ app.get('/gold/history', (req, res) => {
 
 // WÄHRUNGEN mit Caching
 app.get('/rates', async (req, res) => {
+  const cacheDuration = getCurrencyCacheDuration();
+  console.log(`Currency Cache-Dauer: ${cacheDuration / 60000} Minuten`);
+  
   // Prüfe Cache zuerst
-  if (isCacheValid(cache.rates, CACHE_DURATION_MS)) {
+  if (isCacheValid(cache.rates, cacheDuration)) {
     console.log('Serving rates from cache');
     const response = {
       ...cache.rates.data,
       cached: true,
       cacheAge: Math.floor((Date.now() - cache.rates.timestamp) / 1000),
-      nextUpdate: Math.floor((cache.rates.timestamp + CACHE_DURATION_MS - Date.now()) / 1000)
+      nextUpdate: Math.floor((cache.rates.timestamp + cacheDuration - Date.now()) / 1000)
     };
     return res.json(response);
   }
@@ -301,7 +324,7 @@ app.listen(PORT, () => {
 ╔═══════════════════════════════════════════════╗
 ║   Currency & Gold Server                      ║
 ║   Running on: http://localhost:${PORT}        ║
-║   Cache Duration: ${CACHE_DURATION_MS/1000}s (rates), ${GOLD_CACHE_DURATION_MS/1000}s (gold)  ║
+║   Cache: Currency (dynamisch 5min-2h), Gold ${GOLD_CACHE_DURATION_MS/1000}s  ║
 ║   Rate Limit: ${MAX_REQUESTS_PER_WINDOW} req/min              ║
 ╚═══════════════════════════════════════════════╝
   `);
