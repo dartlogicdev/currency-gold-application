@@ -32,6 +32,10 @@ class Config {
 
   // Timeout-Einstellungen
   static const Duration requestTimeout = Duration(seconds: 10);
+
+  // Rechtliches – ersetze mit der echten URL, z.B. GitHub Pages
+  static const String privacyPolicyUrl =
+      'https://YOUR_GITHUB_USERNAME.github.io/currency-gold-privacy-policy/';
 }
 
 // Beispiel-Nutzung in anderen Dateien:

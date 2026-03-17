@@ -31,15 +31,15 @@ class PriceChart extends StatelessWidget {
           horizontalInterval: (maxY - minY) / 5,
           verticalInterval: data.length > 10 ? data.length / 5.0 : 1,
           getDrawingHorizontalLine: (value) {
-            return FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1);
+            return FlLine(color: Colors.grey.withValues(alpha: 0.2), strokeWidth: 1);
           },
           getDrawingVerticalLine: (value) {
-            return FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1);
+            return FlLine(color: Colors.grey.withValues(alpha: 0.2), strokeWidth: 1);
           },
         ),
         borderData: FlBorderData(
           show: true,
-          border: Border.all(color: Colors.grey.withOpacity(0.3)),
+          border: Border.all(color: Colors.grey.withValues(alpha: 0.3)),
         ),
         titlesData: FlTitlesData(
           rightTitles: const AxisTitles(
@@ -106,7 +106,7 @@ class PriceChart extends StatelessWidget {
             color: Theme.of(context).colorScheme.primary,
             belowBarData: BarAreaData(
               show: true,
-              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
             ),
           ),
         ],

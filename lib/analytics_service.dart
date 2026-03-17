@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
@@ -37,9 +38,9 @@ class AnalyticsService {
       // Speichere zurück
       await prefs.setString(_eventsKey, jsonEncode(events));
       
-      print('[Analytics] Event: $eventName ${properties ?? ""}');
+      debugPrint('[Analytics] Event: $eventName ${properties ?? ""}');
     } catch (e) {
-      print('[Analytics] Fehler beim Tracking: $e');
+      debugPrint('[Analytics] Fehler beim Tracking: $e');
     }
   }
 
@@ -51,7 +52,7 @@ class AnalyticsService {
       await prefs.setInt(_sessionCountKey, count + 1);
       await trackEvent('app_opened', {'session_number': count + 1});
     } catch (e) {
-      print('[Analytics] Fehler beim Session-Tracking: $e');
+      debugPrint('[Analytics] Fehler beim Session-Tracking: $e');
     }
   }
 
@@ -63,7 +64,7 @@ class AnalyticsService {
       final List<dynamic> events = jsonDecode(eventsJson);
       return events.cast<Map<String, dynamic>>();
     } catch (e) {
-      print('[Analytics] Fehler beim Laden der Events: $e');
+      debugPrint('[Analytics] Fehler beim Laden der Events: $e');
       return [];
     }
   }
@@ -102,7 +103,7 @@ class AnalyticsService {
         'last_event': events.isNotEmpty ? events.last['timestamp'] : null,
       };
     } catch (e) {
-      print('[Analytics] Fehler bei Statistiken: $e');
+      debugPrint('[Analytics] Fehler bei Statistiken: $e');
       return {};
     }
   }
@@ -113,9 +114,9 @@ class AnalyticsService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_eventsKey);
       await prefs.remove(_sessionCountKey);
-      print('[Analytics] Alle Daten gelöscht');
+      debugPrint('[Analytics] Alle Daten gelöscht');
     } catch (e) {
-      print('[Analytics] Fehler beim Löschen: $e');
+      debugPrint('[Analytics] Fehler beim Löschen: $e');
     }
   }
 

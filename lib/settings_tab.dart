@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'config.dart';
 import 'haptic_service.dart';
 
 class SettingsTab extends StatefulWidget {
@@ -30,6 +32,13 @@ class _SettingsTabState extends State<SettingsTab> {
     setState(() {
       _hapticLevel = HapticService().getLevel();
     });
+  }
+
+  Future<void> _openPrivacyPolicy() async {
+    final uri = Uri.parse(Config.privacyPolicyUrl);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
   }
 
   Future<void> _setHapticLevel(HapticLevel level) async {
@@ -267,8 +276,27 @@ class _SettingsTabState extends State<SettingsTab> {
             ),
           ),
           
+          const SizedBox(height: 16),
+
+          // Rechtliches
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.privacy_tip_outlined),
+                  title: const Text('Datenschutzerklärung'),
+                  trailing: const Icon(Icons.open_in_new, size: 18),
+                  onTap: () {
+                    HapticService().light();
+                    _openPrivacyPolicy();
+                  },
+                ),
+              ],
+            ),
+          ),
+
           const SizedBox(height: 24),
-          
+
           // Version Info
           FutureBuilder<PackageInfo>(
             future: PackageInfo.fromPlatform(),
@@ -286,14 +314,14 @@ class _SettingsTabState extends State<SettingsTab> {
                         'Version ${info.version}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         ),
                       ),
                       Text(
                         'Build ${info.buildNumber}',
                         style: TextStyle(
                           fontSize: 10,
-                          color: Theme.of(context).colorScheme.onSurface.withOpacity(0.4),
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                         ),
                       ),
                     ],
