@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
 import 'haptic_service.dart';
+import 'language_service.dart';
 
 // Währungsnamen
 const Map<String, String> currencyNames = {
@@ -96,7 +97,8 @@ const Map<String, String> currencyFlags = {
 };
 
 class CurrencyTab extends StatefulWidget {
-  const CurrencyTab({super.key});
+  final String langCode;
+  const CurrencyTab({super.key, required this.langCode});
 
   @override
   State<CurrencyTab> createState() => _CurrencyTabState();
@@ -184,9 +186,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          wasInFavorites 
-            ? '$currencyName aus Favoriten entfernt' 
-            : '$currencyName zu Favoriten hinzugefügt'
+          wasInFavorites
+            ? '$currencyName ${LanguageService().t('currency_fav_removed')}'
+            : '$currencyName ${LanguageService().t('currency_fav_added')}'
         ),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
@@ -205,8 +207,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
         if (!rates.containsKey('EUR')) rates['EUR'] = 1.0;
 
         loading = false;
-        if (!rates.containsKey(base) && rates.isNotEmpty)
+        if (!rates.containsKey(base) && rates.isNotEmpty) {
           base = rates.keys.first;
+        }
       });
     }
     fetchRates();
@@ -263,9 +266,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
       // Zeige user-freundliche Fehlermeldung nur wenn keine gecachten Daten vorhanden
       if (mounted && rates.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Keine Internetverbindung. Bitte prüfe deine Verbindung.'),
-            duration: Duration(seconds: 5),
+          SnackBar(
+            content: Text(LanguageService().t('gold_no_connection')),
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -311,7 +314,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
               size: 24,
             ),
             onPressed: () => toggleFavorite(currency),
-            tooltip: isFavorite ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen',
+            tooltip: isFavorite ? LanguageService().t('currency_fav_remove') : LanguageService().t('currency_fav_add'),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
@@ -350,7 +353,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
                 ClipboardData(text: converted.toStringAsFixed(2)),
               );
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$currency Betrag kopiert')),
+                SnackBar(content: Text('$currency ${LanguageService().t('currency_copied')}')),
               );
             },
           ),
@@ -364,8 +367,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     super.build(context); // Required for AutomaticKeepAliveClientMixin
     
     if (loading) return const Center(child: CircularProgressIndicator());
-    if (rates.isEmpty)
-      return const Center(child: Text("Keine Währungen verfügbar"));
+    if (rates.isEmpty) {
+      return Center(child: Text(LanguageService().t('currency_no_rates')));
+    }
 
     // Favoriten: Basis zuerst, dann restliche Favoriten, dann andere
     final List<String> displayFavorites = [];
@@ -435,7 +439,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Offline-Modus',
+                          LanguageService().t('gold_offline'),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
@@ -444,7 +448,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Keine Verbindung zum Server. Es werden gespeicherte Daten angezeigt, die möglicherweise veraltet sind.',
+                          LanguageService().t('gold_offline_sub'),
                           style: TextStyle(
                             fontSize: 13,
                             color: Colors.orange.shade800,
@@ -499,9 +503,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text(lastUpdateDate != null 
-                                    ? 'Aktualisiert: Daten vom $lastUpdateDate'
-                                    : 'Aktualisiert'),
+                                content: Text(lastUpdateDate != null
+                                    ? '${LanguageService().t('currency_updated')}: $lastUpdateDate'
+                                    : LanguageService().t('currency_updated')),
                                 duration: const Duration(seconds: 2),
                               ),
                             );
@@ -518,7 +522,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
           TextField(
             controller: searchController,
             decoration: InputDecoration(
-              labelText: 'Währung suchen...',
+              labelText: LanguageService().t('currency_search'),
               prefixIcon: const Icon(Icons.search),
               suffixIcon: searchQuery.isNotEmpty
                   ? IconButton(
@@ -538,7 +542,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
           // Dropdown Basiswährung
           Row(
             children: [
-              const Text('Basiswährung: '),
+              Text('${LanguageService().t('currency_base')}: '),
               const SizedBox(width: 8),
               DropdownButton<String>(
                 value: dropdownValue,
@@ -571,8 +575,8 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
             controller: amountController,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             decoration: InputDecoration(
-              labelText: 'Betrag in $base',
-              border: OutlineInputBorder(),
+              labelText: '${LanguageService().t('currency_amount')} $base',
+              border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
           ),

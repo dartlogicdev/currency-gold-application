@@ -3,15 +3,24 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'config.dart';
 import 'haptic_service.dart';
+import 'language_service.dart';
 
 class SettingsTab extends StatefulWidget {
   final ThemeMode currentTheme;
   final Function(ThemeMode) onThemeChanged;
+  final String langCode;
+  final Function(String) onLangChanged;
+  final bool zakatEnabled;
+  final Function(bool) onZakatChanged;
 
   const SettingsTab({
     super.key,
     required this.currentTheme,
     required this.onThemeChanged,
+    required this.langCode,
+    required this.onLangChanged,
+    required this.zakatEnabled,
+    required this.onZakatChanged,
   });
 
   @override
@@ -56,17 +65,55 @@ class _SettingsTabState extends State<SettingsTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l = LanguageService();
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Einstellungen',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          Text(
+            l.t('settings_title'),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 24),
-          
+
+          // Sprache
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.language, size: 24),
+                      const SizedBox(width: 12),
+                      Text(l.t('settings_language'),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  ...LanguageService.supportedLanguages.map((lang) {
+                    return RadioListTile<String>(
+                      dense: true,
+                      title: Text('${lang['flag']}  ${lang['name']}'),
+                      value: lang['code']!,
+                      groupValue: widget.langCode,
+                      onChanged: (code) {
+                        if (code != null) {
+                          HapticService().selection();
+                          widget.onLangChanged(code);
+                        }
+                      },
+                    );
+                  }),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
           // Theme Auswahl
           Card(
             child: Padding(
@@ -76,86 +123,43 @@ class _SettingsTabState extends State<SettingsTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.palette, size: 24),
+                      const Icon(Icons.palette, size: 24),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Design',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
+                      Text(l.t('settings_design'),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
-                  // Hell
+
                   RadioListTile<ThemeMode>(
-                    title: Row(
-                      children: [
-                        Icon(Icons.light_mode, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('Hell'),
-                      ],
-                    ),
+                    title: Row(children: [const Icon(Icons.light_mode, size: 20), const SizedBox(width: 12), Text(l.t('settings_light'))]),
                     value: ThemeMode.light,
                     groupValue: widget.currentTheme,
-                    onChanged: (mode) {
-                      if (mode != null) {
-                        HapticService().selection();
-                        widget.onThemeChanged(mode);
-                      }
-                    },
+                    onChanged: (mode) { if (mode != null) { HapticService().selection(); widget.onThemeChanged(mode); } },
                   ),
-                  
-                  // Dunkel
                   RadioListTile<ThemeMode>(
-                    title: Row(
-                      children: [
-                        Icon(Icons.dark_mode, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('Dunkel'),
-                      ],
-                    ),
+                    title: Row(children: [const Icon(Icons.dark_mode, size: 20), const SizedBox(width: 12), Text(l.t('settings_dark'))]),
                     value: ThemeMode.dark,
                     groupValue: widget.currentTheme,
-                    onChanged: (mode) {
-                      if (mode != null) {
-                        HapticService().selection();
-                        widget.onThemeChanged(mode);
-                      }
-                    },
+                    onChanged: (mode) { if (mode != null) { HapticService().selection(); widget.onThemeChanged(mode); } },
                   ),
-                  
-                  // System
                   RadioListTile<ThemeMode>(
-                    title: Row(
-                      children: [
-                        Icon(Icons.settings_suggest, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('System-Standard'),
-                      ],
-                    ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(left: 32, top: 4),
-                      child: Text(
-                        'Passt sich automatisch an dein Gerät an',
-                        style: TextStyle(fontSize: 12),
-                      ),
+                    title: Row(children: [const Icon(Icons.settings_suggest, size: 20), const SizedBox(width: 12), Text(l.t('settings_system'))]),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(left: 32, top: 4),
+                      child: Text(l.t('settings_system_sub'), style: const TextStyle(fontSize: 12)),
                     ),
                     value: ThemeMode.system,
                     groupValue: widget.currentTheme,
-                    onChanged: (mode) {
-                      if (mode != null) {
-                        HapticService().selection();
-                        widget.onThemeChanged(mode);
-                      }
-                    },
+                    onChanged: (mode) { if (mode != null) { HapticService().selection(); widget.onThemeChanged(mode); } },
                   ),
                 ],
               ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Haptic Feedback Einstellungen
           Card(
             child: Padding(
@@ -165,117 +169,57 @@ class _SettingsTabState extends State<SettingsTab> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.vibration, size: 24),
+                      const Icon(Icons.vibration, size: 24),
                       const SizedBox(width: 12),
-                      const Text(
-                        'Haptisches Feedback',
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
+                      Text(l.t('settings_haptic'),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
-                  // Alle
+
                   RadioListTile<HapticLevel>(
-                    title: Row(
-                      children: [
-                        Icon(Icons.vibration, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('Alle Aktionen'),
-                      ],
-                    ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(left: 32, top: 4),
-                      child: Text(
-                        'Vibration bei allen Interaktionen',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    title: Row(children: [const Icon(Icons.vibration, size: 20), const SizedBox(width: 12), Text(l.t('settings_haptic_all'))]),
+                    subtitle: Padding(padding: const EdgeInsets.only(left: 32, top: 4), child: Text(l.t('settings_haptic_all_sub'), style: const TextStyle(fontSize: 12))),
                     value: HapticLevel.all,
                     groupValue: _hapticLevel,
-                    onChanged: (level) {
-                      if (level != null) _setHapticLevel(level);
-                    },
+                    onChanged: (level) { if (level != null) _setHapticLevel(level); },
                   ),
-                  
-                  // Nur wichtige
                   RadioListTile<HapticLevel>(
-                    title: Row(
-                      children: [
-                        Icon(Icons.notification_important, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('Nur wichtige'),
-                      ],
-                    ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(left: 32, top: 4),
-                      child: Text(
-                        'Vibration nur bei wichtigen Aktionen',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    title: Row(children: [const Icon(Icons.notification_important, size: 20), const SizedBox(width: 12), Text(l.t('settings_haptic_important'))]),
+                    subtitle: Padding(padding: const EdgeInsets.only(left: 32, top: 4), child: Text(l.t('settings_haptic_important_sub'), style: const TextStyle(fontSize: 12))),
                     value: HapticLevel.important,
                     groupValue: _hapticLevel,
-                    onChanged: (level) {
-                      if (level != null) _setHapticLevel(level);
-                    },
+                    onChanged: (level) { if (level != null) _setHapticLevel(level); },
                   ),
-                  
-                  // Aus
                   RadioListTile<HapticLevel>(
-                    title: Row(
-                      children: [
-                        Icon(Icons.vibration_outlined, size: 20),
-                        const SizedBox(width: 12),
-                        const Text('Aus'),
-                      ],
-                    ),
-                    subtitle: const Padding(
-                      padding: EdgeInsets.only(left: 32, top: 4),
-                      child: Text(
-                        'Keine Vibration',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
+                    title: Row(children: [const Icon(Icons.vibration_outlined, size: 20), const SizedBox(width: 12), Text(l.t('settings_haptic_off'))]),
+                    subtitle: Padding(padding: const EdgeInsets.only(left: 32, top: 4), child: Text(l.t('settings_haptic_off_sub'), style: const TextStyle(fontSize: 12))),
                     value: HapticLevel.off,
                     groupValue: _hapticLevel,
-                    onChanged: (level) {
-                      if (level != null) _setHapticLevel(level);
-                    },
+                    onChanged: (level) { if (level != null) _setHapticLevel(level); },
                   ),
                 ],
               ),
             ),
           ),
-          
-          const SizedBox(height: 24),
-          
-          // Info-Karte
+
+          const SizedBox(height: 16),
+
+          // Zakat-Modus
           Card(
-            color: Theme.of(context).colorScheme.secondaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    color: Theme.of(context).colorScheme.onSecondaryContainer,
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      'Deine Einstellungen werden lokal gespeichert und nicht übertragen.',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            child: SwitchListTile(
+              secondary: const Icon(Icons.calculate_outlined, size: 24),
+              title: Text(l.t('settings_zakat'),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+              subtitle: Text(l.t('settings_zakat_sub'), style: const TextStyle(fontSize: 12)),
+              value: widget.zakatEnabled,
+              onChanged: (val) {
+                HapticService().selection();
+                widget.onZakatChanged(val);
+              },
             ),
           ),
-          
+
           const SizedBox(height: 16),
 
           // Rechtliches
@@ -284,7 +228,7 @@ class _SettingsTabState extends State<SettingsTab> {
               children: [
                 ListTile(
                   leading: const Icon(Icons.privacy_tip_outlined),
-                  title: const Text('Datenschutzerklärung'),
+                  title: Text(l.t('settings_privacy')),
                   trailing: const Icon(Icons.open_in_new, size: 18),
                   onTap: () {
                     HapticService().light();
@@ -297,33 +241,41 @@ class _SettingsTabState extends State<SettingsTab> {
 
           const SizedBox(height: 24),
 
+          // Info-Karte
+          Card(
+            color: Theme.of(context).colorScheme.secondaryContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      l.t('settings_info'),
+                      style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSecondaryContainer),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
           // Version Info
           FutureBuilder<PackageInfo>(
             future: PackageInfo.fromPlatform(),
             builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                return const SizedBox.shrink();
-              }
+              if (!snapshot.hasData) return const SizedBox.shrink();
               final info = snapshot.data!;
               return Center(
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 16),
                   child: Column(
                     children: [
-                      Text(
-                        'Version ${info.version}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                        ),
-                      ),
-                      Text(
-                        'Build ${info.buildNumber}',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                        ),
-                      ),
+                      Text('Version ${info.version}', style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                      Text('Build ${info.buildNumber}', style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4))),
                     ],
                   ),
                 ),

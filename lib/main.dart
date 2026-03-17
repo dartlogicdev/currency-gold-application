@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'currency_tab.dart';
 import 'gold_tab.dart';
 // import 'chart_tab.dart'; // TODO: Aktivieren wenn Charts produktionsreif
@@ -9,6 +10,7 @@ import 'analytics_service.dart';
 import 'theme_service.dart';
 import 'settings_tab.dart';
 import 'haptic_service.dart';
+import 'language_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +27,9 @@ void main() async {
   // Initialisiere HapticService
   await HapticService().init();
 
+  // Initialisiere LanguageService
+  await LanguageService().init();
+
   runApp(const MyApp());
 }
 
@@ -37,6 +42,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.system;
+  String _langCode = LanguageService().currentCode;
+  bool _zakatEnabled = false;
 
   @override
   void initState() {
@@ -46,8 +53,11 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _loadTheme() async {
     final theme = await ThemeService().getThemeMode();
+    final prefs = await SharedPreferences.getInstance();
     setState(() {
       _themeMode = theme;
+      _langCode = LanguageService().currentCode;
+      _zakatEnabled = prefs.getBool('zakat_enabled') ?? false;
     });
   }
 
@@ -56,6 +66,21 @@ class _MyAppState extends State<MyApp> {
       _themeMode = mode;
     });
     ThemeService().setThemeMode(mode);
+  }
+
+  void _changeLanguage(String code) {
+    LanguageService().setLanguage(code);
+    setState(() {
+      _langCode = code;
+    });
+  }
+
+  Future<void> _changeZakat(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('zakat_enabled', value);
+    setState(() {
+      _zakatEnabled = value;
+    });
   }
 
   @override
@@ -79,7 +104,14 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.dark,
         ),
       ),
-      home: HomePage(onThemeChanged: _changeTheme, currentTheme: _themeMode),
+      home: HomePage(
+        onThemeChanged: _changeTheme,
+        currentTheme: _themeMode,
+        langCode: _langCode,
+        onLangChanged: _changeLanguage,
+        zakatEnabled: _zakatEnabled,
+        onZakatChanged: _changeZakat,
+      ),
     );
   }
 }
@@ -87,8 +119,20 @@ class _MyAppState extends State<MyApp> {
 class HomePage extends StatefulWidget {
   final Function(ThemeMode) onThemeChanged;
   final ThemeMode currentTheme;
-  
-  const HomePage({super.key, required this.onThemeChanged, required this.currentTheme});
+  final String langCode;
+  final Function(String) onLangChanged;
+  final bool zakatEnabled;
+  final Function(bool) onZakatChanged;
+
+  const HomePage({
+    super.key,
+    required this.onThemeChanged,
+    required this.currentTheme,
+    required this.langCode,
+    required this.onLangChanged,
+    required this.zakatEnabled,
+    required this.onZakatChanged,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -100,12 +144,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   
   // Dynamische Tab-Namen basierend auf sichtbaren Tabs
   List<String> get _tabNames {
+    final l = LanguageService();
     final showDebug = Config.isDevelopment;
-    // final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
-    
-    final names = ['Currency', 'Gold', 'Settings'];
-    // if (showChartTab) names.add('Chart');
-    if (showDebug) names.add('Debug');
+    final names = [l.t('tab_currency'), l.t('tab_gold'), l.t('tab_settings')];
+    if (showDebug) names.add(l.t('tab_debug'));
     return names;
   }
 
@@ -154,26 +196,26 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            const Tab(text: 'Currency'),
-            const Tab(text: 'Gold'),
-            const Tab(icon: Icon(Icons.settings), text: 'Einstellungen'),
-            // if (showChartTab) const Tab(text: 'Chart'),
-            // if (showPartnerTab) const Tab(text: 'Partner'),
-            if (showDebug) const Tab(text: 'Debug'),
+            Tab(text: LanguageService().t('tab_currency')),
+            Tab(text: LanguageService().t('tab_gold')),
+            Tab(icon: const Icon(Icons.settings), text: LanguageService().t('tab_settings')),
+            if (showDebug) Tab(text: LanguageService().t('tab_debug')),
           ],
         ),
       ),
       body: TabBarView(
         controller: _tabController,
         children: [
-          const CurrencyTab(),
-          const GoldTab(),
+          CurrencyTab(langCode: widget.langCode),
+          GoldTab(langCode: widget.langCode, zakatEnabled: widget.zakatEnabled),
           SettingsTab(
             currentTheme: widget.currentTheme,
             onThemeChanged: widget.onThemeChanged,
+            langCode: widget.langCode,
+            onLangChanged: widget.onLangChanged,
+            zakatEnabled: widget.zakatEnabled,
+            onZakatChanged: widget.onZakatChanged,
           ),
-          // if (showChartTab) ChartTab(),
-          // if (showPartnerTab) AffiliateTab(),
           if (showDebug) const DebugModeCheck(),
         ],
       ),

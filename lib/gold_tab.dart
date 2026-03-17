@@ -6,6 +6,7 @@ import 'package:share_plus/share_plus.dart';
 import 'config.dart';
 import 'analytics_service.dart';
 import 'haptic_service.dart';
+import 'language_service.dart';
 
 class GoldItem {
   String coinName;
@@ -20,7 +21,9 @@ class GoldItem {
 }
 
 class GoldTab extends StatefulWidget {
-  const GoldTab({super.key});
+  final String langCode;
+  final bool zakatEnabled;
+  const GoldTab({super.key, required this.langCode, required this.zakatEnabled});
 
   @override
   State<GoldTab> createState() => _GoldTabState();
@@ -58,8 +61,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   }
 
   Future<void> _initialize() async {
-    await loadCart(); // Muss VOR fetchGold() aufgerufen werden
-    await loadGoldFromCache(); // Gecachte Daten laden
+    await loadCart();
+    await loadGoldFromCache();
     fetchGold();
   }
 
@@ -137,10 +140,10 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       if (mounted && coins.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Keine Internetverbindung. Bitte prüfe deine Verbindung.'),
+            content: Text(LanguageService().t('gold_no_connection')),
             duration: const Duration(seconds: 5),
             action: SnackBarAction(
-              label: 'Erneut versuchen',
+              label: LanguageService().t('gold_retry'),
               onPressed: () {
                 fetchGold();
               },
@@ -233,7 +236,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     // Feedback SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$selectedCoin zum Warenkorb hinzugefügt'),
+        content: Text('$selectedCoin ${LanguageService().t('gold_added_to_cart')}'),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -257,7 +260,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     AnalyticsService().trackCartItemRemoved(index);
 
     saveCart();
-    showUndoSnackBar('Eintrag entfernt');
+    showUndoSnackBar(LanguageService().t('gold_removed'));
   }
 
   void clearCart() {
@@ -267,12 +270,12 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Warenkorb leeren?'),
-        content: Text('Möchtest du wirklich alle ${cart.length} Einträge entfernen?'),
+        title: Text(LanguageService().t('gold_clear_title')),
+        content: Text('${LanguageService().t('gold_clear_confirm')} ${cart.length} ${LanguageService().t('gold_clear_confirm2')}'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Abbrechen'),
+            child: Text(LanguageService().t('gold_cancel')),
           ),
           TextButton(
             onPressed: () {
@@ -291,9 +294,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               });
 
               saveCart();
-              showUndoSnackBar('Alle Einträge entfernt');
+              showUndoSnackBar(LanguageService().t('gold_all_removed'));
             },
-            child: const Text('Leeren', style: TextStyle(color: Colors.red)),
+              child: Text(LanguageService().t('gold_clear'), style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -352,6 +355,103 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     );
   }
 
+  void showZakatDialog() {
+    if (cart.isEmpty) return;
+    final l = LanguageService();
+
+    double totalZakat = 0;
+    final List<Map<String, dynamic>> zakatItems = [];
+
+    for (final item in cart) {
+      final coinData = coins[item.coinName];
+      final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
+      final data = coinData?[selectedCurrency] ?? {};
+      final spot = ((data['spot'] ?? 0.0) as num).toDouble();
+      final grams = item.quantity * weight;
+      final spotTotal = (spot / weight) * grams;
+      final dealerTotal = spotTotal * 1.04;
+      final zakat = dealerTotal / 40;
+      totalZakat += zakat;
+      zakatItems.add({'item': item, 'dealerTotal': dealerTotal, 'zakat': zakat});
+    }
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Text(
+                  l.t('zakat_title'),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Center(
+                child: Text(
+                  l.t('zakat_subtitle'),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                ),
+              ),
+              const Divider(height: 24),
+              ...zakatItems.map((e) {
+                final item = e['item'] as GoldItem;
+                final zakat = e['zakat'] as double;
+                final dealer = e['dealerTotal'] as double;
+                final qty = item.quantity % 1 == 0
+                    ? item.quantity.toInt().toString()
+                    : item.quantity.toStringAsFixed(2);
+                return ListTile(
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                  title: Text('${qty}× ${item.coinName}'),
+                  subtitle: Text(
+                    '${l.t('zakat_basis')}: ${dealer.toStringAsFixed(2)} $selectedCurrency',
+                    style: const TextStyle(fontSize: 11),
+                  ),
+                  trailing: Text(
+                    '${zakat.toStringAsFixed(2)} $selectedCurrency',
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
+                );
+              }),
+              const Divider(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l.t('zakat_total'),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${totalZakat.toStringAsFixed(2)} $selectedCurrency',
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text(l.t('zakat_close')),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void undo() {
     if (undoSnapshot.isEmpty) return;
 
@@ -370,7 +470,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       SnackBar(
         content: Text(text),
         duration: const Duration(seconds: 4),
-        action: SnackBarAction(label: 'Rückgängig', onPressed: undo),
+        action: SnackBarAction(label: LanguageService().t('gold_undo'), onPressed: undo),
       ),
     );
   }
@@ -380,7 +480,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
     super.build(context); // Required for AutomaticKeepAliveClientMixin
-    
+    final l = LanguageService();
     if (loading) return const Center(child: CircularProgressIndicator());
 
     double totalSpot = 0;
@@ -429,7 +529,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Offline-Modus',
+                              l.t('gold_offline'),
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16,
@@ -438,7 +538,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Keine Verbindung zum Server. Es werden gespeicherte Daten angezeigt, die möglicherweise veraltet sind.',
+                              l.t('gold_offline_sub'),
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.orange.shade800,
@@ -492,9 +592,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                           await fetchGold();
                           if (mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Goldpreise aktualisiert'),
-                                duration: Duration(seconds: 2),
+                              SnackBar(
+                                content: Text(l.t('gold_updated')),
+                                duration: const Duration(seconds: 2),
                               ),
                             );
                           }
@@ -507,10 +607,10 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             ),
           
           DropdownButtonFormField<String>(
-            value: selectedCoin,
-            decoration: const InputDecoration(
-              labelText: 'Münze',
-              border: OutlineInputBorder(),
+            initialValue: selectedCoin,
+            decoration: InputDecoration(
+              labelText: l.t('gold_coin'),
+              border: const OutlineInputBorder(),
             ),
             items: coins.keys.map((coin) {
               final w = coins[coin]['weight'];
@@ -534,10 +634,10 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           const SizedBox(height: 12),
 
           DropdownButtonFormField<String>(
-            value: selectedCurrency,
-            decoration: const InputDecoration(
-              labelText: 'Währung',
-              border: OutlineInputBorder(),
+            initialValue: selectedCurrency,
+            decoration: InputDecoration(
+              labelText: l.t('gold_currency'),
+              border: const OutlineInputBorder(),
             ),
             items: currencies
                 .map((c) => DropdownMenuItem(value: c, child: Text(c)))
@@ -553,16 +653,16 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                 child: TextField(
                   controller: quantityController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
-                    labelText: 'Anzahl',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: l.t('gold_quantity'),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
               ),
               const SizedBox(width: 12),
               ElevatedButton(
                 onPressed: addToCart,
-                child: const Text('Hinzufügen'),
+                child: Text(l.t('gold_add')),
               ),
               const Spacer(),
               IconButton(
@@ -602,15 +702,15 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                   child: Card(
                     child: ListTile(
                       title: Text(item.coinName),
-                      subtitle: Text('Anzahl: ${item.quantity % 1 == 0 ? item.quantity.toInt() : item.quantity}'),
+                      subtitle: Text('${l.t('gold_quantity')}: ${item.quantity % 1 == 0 ? item.quantity.toInt() : item.quantity}'),
                       trailing: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            'Spot: ${spotTotal.toStringAsFixed(2)} $selectedCurrency',
+                            '${l.t('gold_spot')}: ${spotTotal.toStringAsFixed(2)} $selectedCurrency',
                           ),
                           Text(
-                            'Händler: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency',
+                            '${l.t('gold_dealer')}: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency',
                           ),
                         ],
                       ),
@@ -623,11 +723,11 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           const SizedBox(height: 16),
 
           Text(
-            'Gesamt Spot: ${totalSpot.toStringAsFixed(2)} $selectedCurrency',
+            '${l.t('gold_total_spot')}: ${totalSpot.toStringAsFixed(2)} $selectedCurrency',
             style: const TextStyle(fontSize: 16),
           ),
           Text(
-            'Gesamt Händler: ${totalDealer.toStringAsFixed(2)} $selectedCurrency',
+            '${l.t('gold_total_dealer')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           
@@ -640,9 +740,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               child: OutlinedButton.icon(
                 onPressed: clearCart,
                 icon: const Icon(Icons.delete_sweep, color: Colors.red),
-                label: const Text(
-                  'Alle entfernen',
-                  style: TextStyle(color: Colors.red),
+                label: Text(
+                  l.t('gold_remove_all'),
+                  style: const TextStyle(color: Colors.red),
                 ),
                 style: OutlinedButton.styleFrom(
                   side: const BorderSide(color: Colors.red),
@@ -659,12 +759,32 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               child: OutlinedButton.icon(
                 onPressed: shareCart,
                 icon: const Icon(Icons.share),
-                label: const Text('Warenkorb teilen'),
+                label: Text(LanguageService().t('gold_share')),
                 style: OutlinedButton.styleFrom(
                   side: BorderSide(color: Theme.of(context).primaryColor),
                 ),
               ),
             ),
+
+          // Zakat Button
+          if (cart.isNotEmpty && widget.zakatEnabled) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () {
+                  HapticService().light();
+                  showZakatDialog();
+                },
+                icon: const Icon(Icons.calculate_outlined),
+                label: Text(LanguageService().t('zakat_button')),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.amber.shade700,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+          ],
         ],
       ),
         ),
