@@ -10,7 +10,7 @@ class Config {
   // Für Production: Ersetze mit deiner Cloud-URL
   static const String _devApiBaseUrl = 'http://192.168.178.42:3000';
   static const String _prodApiBaseUrl =
-      'https://currency-gold-application.onrender.com'; // Beispiel
+      'https://currency-gold-application-j7ax.onrender.com';
 
   static String get apiBaseUrl =>
       isDevelopment ? _devApiBaseUrl : _prodApiBaseUrl;
