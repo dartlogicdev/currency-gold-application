@@ -192,9 +192,7 @@ app.get('/gold', async (req, res) => {
   const coins = {
     'Gramm': { weight: 1, karat: 24 },
     'Kilogramm': { weight: 1000, karat: 24 },
-    'Krügerrand (1 oz)': { weight: 31.1035, karat: 24 },
-    'Maple Leaf (1 oz)': { weight: 31.1035, karat: 24 },
-    'Philharmoniker (1 oz)': { weight: 31.1035, karat: 24 },
+    'Unze (1 oz)': { weight: 31.1035, karat: 24 },
     'Cumhuriyet Altını': { weight: 7.21, karat: 22 },
     'Ata Altını': { weight: 7.21, karat: 22 },
     'Çeyrek Altın': { weight: 1.75, karat: 22 },
