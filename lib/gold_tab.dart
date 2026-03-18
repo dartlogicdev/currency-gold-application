@@ -676,6 +676,31 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             '${l.t('gold_total_dealer')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
+
+          if (lastFetchTime != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                children: [
+                  Icon(Icons.access_time, size: 11, color: Colors.grey.shade400),
+                  const SizedBox(width: 4),
+                  Text(
+                    lastFetchTime!.substring(0, 16).replaceAll('-', '.').replaceAll('T', ' '),
+                    style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                  ),
+                  const SizedBox(width: 4),
+                  IconButton(
+                    icon: Icon(Icons.refresh, size: 14, color: Colors.grey.shade400),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () async {
+                      setState(() => loading = true);
+                      await fetchGold();
+                    },
+                  ),
+                ],
+              ),
+            ),
           
           const SizedBox(height: 16),
           

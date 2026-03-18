@@ -460,59 +460,38 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
                 ],
               ),
             ),
-          // Daten-Status Info (neu!)
+          // Daten-Status Info
           if (lastUpdateDate != null || isCached != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.blue.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.blue.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
                 children: [
-                  Row(
-                    children: [
-                      Icon(
-                        isCached == true ? Icons.cached : Icons.cloud_done,
-                        size: 16,
-                        color: Colors.blue.shade700,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          isCached == true
-                              ? 'Cache (update in ${(300 - (cacheAge ?? 0))}s) • EZB ${lastUpdateDate ?? ""}'
-                              : 'Server-Daten • EZB ${lastUpdateDate ?? ""}',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.blue.shade700,
+                  Icon(Icons.access_time, size: 11, color: Colors.grey.shade400),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      'EZB ${lastUpdateDate ?? ""}${isCached == true ? " (Cache)" : ""}',
+                      style: TextStyle(fontSize: 11, color: Colors.grey.shade400),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.refresh, size: 14, color: Colors.grey.shade400),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () async {
+                      setState(() => loading = true);
+                      await fetchRates();
+                      if (mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(lastUpdateDate != null
+                                ? '${LanguageService().t('currency_updated')}: $lastUpdateDate'
+                                : LanguageService().t('currency_updated')),
+                            duration: const Duration(seconds: 2),
                           ),
-                        ),
-                      ),
-                      // Refresh Button
-                      IconButton(
-                        icon: Icon(Icons.refresh, size: 20, color: Colors.blue.shade700),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () async {
-                          setState(() => loading = true);
-                          await fetchRates();
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(lastUpdateDate != null
-                                    ? '${LanguageService().t('currency_updated')}: $lastUpdateDate'
-                                    : LanguageService().t('currency_updated')),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
+                        );
+                      }
+                    },
                   ),
                 ],
               ),
