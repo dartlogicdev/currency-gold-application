@@ -190,8 +190,8 @@ app.get('/gold', async (req, res) => {
 
   // Münzen-Definitionen
   const coins = {
-    'Gramm': { weight: 1, karat: 24 },
-    'Kilogramm': { weight: 1000, karat: 24 },
+    'Gold (1g)': { weight: 1, karat: 24 },
+    'Gold (1kg)': { weight: 1000, karat: 24 },
     'Unze (1 oz)': { weight: 31.1035, karat: 24 },
     'Cumhuriyet Altını': { weight: 7.21, karat: 22 },
     'Ata Altını': { weight: 7.21, karat: 22 },

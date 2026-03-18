@@ -236,7 +236,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     // Feedback SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$selectedCoin ${LanguageService().t('gold_added_to_cart')}'),
+        content: Text('${l.translateCoin(selectedCoin)} ${l.t('gold_added_to_cart')}'),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -412,7 +412,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                 return ListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  title: Text('${qty}× ${item.coinName}'),
+                  title: Text('${qty}× ${LanguageService().translateCoin(item.coinName)}'),
                   subtitle: Text(
                     '${l.t('zakat_basis')}: ${dealer.toStringAsFixed(2)} $selectedCurrency',
                     style: const TextStyle(fontSize: 11),
@@ -620,7 +620,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(coin),
+                    Text(l.translateCoin(coin)),
                     Text(
                       '${w.toStringAsFixed(2)}g • $k K',
                       style: TextStyle(fontSize: 12, color: Colors.grey[600]),
@@ -701,7 +701,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                   onDismissed: (_) => removeItem(index),
                   child: Card(
                     child: ListTile(
-                      title: Text(item.coinName),
+                      title: Text(l.translateCoin(item.coinName)),
                       subtitle: Text('${l.t('gold_quantity')}: ${item.quantity % 1 == 0 ? item.quantity.toInt() : item.quantity}'),
                       trailing: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,

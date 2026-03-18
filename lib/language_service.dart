@@ -35,6 +35,18 @@ class LanguageService {
         key;
   }
 
+  String translateCoin(String serverName) {
+    return _coinTranslations[serverName]?[_langCode] ?? serverName;
+  }
+
+  static const Map<String, Map<String, String>> _coinTranslations = {
+    'Gold (1g)':  {'de': 'Gold (1g)',    'en': 'Gold (1g)',    'tr': 'Altın (1g)',  'fr': 'Or (1g)',     'es': 'Oro (1g)'},
+    'Gold (1kg)': {'de': 'Gold (1kg)',   'en': 'Gold (1kg)',   'tr': 'Altın (1kg)', 'fr': 'Or (1kg)',    'es': 'Oro (1kg)'},
+    'Unze (1 oz)':{'de': 'Unze (1 oz)', 'en': 'Ounce (1 oz)', 'tr': 'Ons (1 oz)',  'fr': 'Once (1 oz)', 'es': 'Onza (1 oz)'},
+    'Silber (1g)':{'de': 'Silber (1g)', 'en': 'Silver (1g)',  'tr': 'Gümüş (1g)',  'fr': 'Argent (1g)', 'es': 'Plata (1g)'},
+    'Silber (1kg)':{'de':'Silber (1kg)','en': 'Silver (1kg)', 'tr': 'Gümüş (1kg)', 'fr': 'Argent (1kg)','es': 'Plata (1kg)'},
+  };
+
   static const Map<String, Map<String, String>> _translations = {
     'de': {
       // App
