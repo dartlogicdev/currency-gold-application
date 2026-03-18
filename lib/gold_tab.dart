@@ -236,7 +236,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     // Feedback SnackBar
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${l.translateCoin(selectedCoin)} ${l.t('gold_added_to_cart')}'),
+        content: Text('${LanguageService().translateCoin(selectedCoin)} ${LanguageService().t('gold_added_to_cart')}'),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
