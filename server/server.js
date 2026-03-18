@@ -11,7 +11,7 @@ app.use(cors());
 // ==================== KONFIGURATION ====================
 const GOLD_API_KEY = process.env.GOLD_API_KEY;
 const PORT = process.env.PORT || 3000;
-const GOLD_CACHE_DURATION_MS = 8 * 60 * 60 * 1000; // 8 Stunden (100 req/Monat Limit)
+const GOLD_CACHE_DURATION_MS = 15 * 60 * 60 * 1000; // 15 Stunden (~96 req/Monat mit Gold+Silber)
 const HISTORY_FILE = path.join(__dirname, 'gold_history.json');
 const PREMIUM_PERCENT = 4;
 
