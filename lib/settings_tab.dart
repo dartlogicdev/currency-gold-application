@@ -12,6 +12,10 @@ class SettingsTab extends StatefulWidget {
   final Function(String) onLangChanged;
   final bool zakatEnabled;
   final Function(bool) onZakatChanged;
+  final double dealerMarkup;
+  final bool dealerMarkupEnabled;
+  final Function(double) onDealerMarkupChanged;
+  final Function(bool) onDealerMarkupEnabledChanged;
 
   const SettingsTab({
     super.key,
@@ -21,6 +25,10 @@ class SettingsTab extends StatefulWidget {
     required this.onLangChanged,
     required this.zakatEnabled,
     required this.onZakatChanged,
+    required this.dealerMarkup,
+    required this.dealerMarkupEnabled,
+    required this.onDealerMarkupChanged,
+    required this.onDealerMarkupEnabledChanged,
   });
 
   @override
@@ -217,6 +225,54 @@ class _SettingsTabState extends State<SettingsTab> {
                 HapticService().selection();
                 widget.onZakatChanged(val);
               },
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Händleraufschlag
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.percent, size: 24),
+                      const SizedBox(width: 12),
+                      Text(l.t('settings_dealer'),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(
+                      widget.dealerMarkupEnabled
+                          ? '${widget.dealerMarkup.toInt()}%'
+                          : l.t('settings_dealer_off'),
+                    ),
+                    subtitle: Text(l.t('settings_dealer_sub'), style: const TextStyle(fontSize: 12)),
+                    value: widget.dealerMarkupEnabled,
+                    onChanged: (val) {
+                      HapticService().selection();
+                      widget.onDealerMarkupEnabledChanged(val);
+                    },
+                  ),
+                  if (widget.dealerMarkupEnabled)
+                    Slider(
+                      value: widget.dealerMarkup,
+                      min: 1,
+                      max: 5,
+                      divisions: 4,
+                      label: '${widget.dealerMarkup.toInt()}%',
+                      onChanged: (val) {
+                        HapticService().selection();
+                        widget.onDealerMarkupChanged(val);
+                      },
+                    ),
+                ],
+              ),
             ),
           ),
 

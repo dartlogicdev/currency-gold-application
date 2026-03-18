@@ -23,7 +23,9 @@ class GoldItem {
 class GoldTab extends StatefulWidget {
   final String langCode;
   final bool zakatEnabled;
-  const GoldTab({super.key, required this.langCode, required this.zakatEnabled});
+  final double dealerMarkup;
+  final bool dealerMarkupEnabled;
+  const GoldTab({super.key, required this.langCode, required this.zakatEnabled, required this.dealerMarkup, required this.dealerMarkupEnabled});
 
   @override
   State<GoldTab> createState() => _GoldTabState();
@@ -369,7 +371,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       final spot = ((data['spot'] ?? 0.0) as num).toDouble();
       final grams = item.quantity * weight;
       final spotTotal = (spot / weight) * grams;
-      final dealerTotal = spotTotal * 1.04;
+      final dealerTotal = spotTotal * (widget.dealerMarkupEnabled ? (1 + widget.dealerMarkup / 100) : 1.0);
       final zakat = dealerTotal / 40;
       totalZakat += zakat;
       zakatItems.add({'item': item, 'dealerTotal': dealerTotal, 'zakat': zakat});
@@ -495,7 +497,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       final grams = item.quantity * weight;
       final spotTotal = (spot / weight) * grams;
       totalSpot += spotTotal;
-      totalDealer += spotTotal * 1.04;
+      totalDealer += spotTotal * (widget.dealerMarkupEnabled ? (1 + widget.dealerMarkup / 100) : 1.0);
     }
 
     return RefreshIndicator(
@@ -550,62 +552,6 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                     ],
                   ),
                 ),
-              // Daten-Status Info (wie bei Currency-Tab)
-          if (isCached != null || lastFetchTime != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Colors.amber.shade50,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.amber.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        isCached == true ? Icons.cached : Icons.cloud_done,
-                        size: 16,
-                        color: Colors.amber.shade700,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          isCached == true
-                              ? 'Cache (update in ${(600 - (cacheAge ?? 0))}s)'
-                              : 'Server-Daten (Spot + Händler)',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Colors.amber.shade700,
-                          ),
-                        ),
-                      ),
-                      // Refresh Button
-                      IconButton(
-                        icon: Icon(Icons.refresh, size: 20, color: Colors.amber.shade700),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () async {
-                          setState(() => loading = true);
-                          await fetchGold();
-                          if (mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l.t('gold_updated')),
-                                duration: const Duration(seconds: 2),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          
           DropdownButtonFormField<String>(
             initialValue: selectedCoin,
             decoration: InputDecoration(
@@ -687,7 +633,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
               final grams = item.quantity * weight;
               final spotTotal = (spot / weight) * grams;
-              final dealerTotal = spotTotal * 1.04;
+              final dealerTotal = spotTotal * (widget.dealerMarkupEnabled ? (1 + widget.dealerMarkup / 100) : 1.0);
 
                 return Dismissible(
                   key: ValueKey(item.coinName),

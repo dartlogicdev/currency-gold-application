@@ -44,6 +44,8 @@ class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.system;
   String _langCode = LanguageService().currentCode;
   bool _zakatEnabled = false;
+  double _dealerMarkup = 4.0;
+  bool _dealerMarkupEnabled = true;
 
   @override
   void initState() {
@@ -58,7 +60,21 @@ class _MyAppState extends State<MyApp> {
       _themeMode = theme;
       _langCode = LanguageService().currentCode;
       _zakatEnabled = prefs.getBool('zakat_enabled') ?? false;
+      _dealerMarkup = (prefs.getInt('dealer_markup_percent') ?? 4).toDouble();
+      _dealerMarkupEnabled = prefs.getBool('dealer_markup_enabled') ?? true;
     });
+  }
+
+  Future<void> _changeDealerMarkup(double value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('dealer_markup_percent', value.toInt());
+    setState(() => _dealerMarkup = value);
+  }
+
+  Future<void> _changeDealerMarkupEnabled(bool value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('dealer_markup_enabled', value);
+    setState(() => _dealerMarkupEnabled = value);
   }
 
   void _changeTheme(ThemeMode mode) {
@@ -111,6 +127,10 @@ class _MyAppState extends State<MyApp> {
         onLangChanged: _changeLanguage,
         zakatEnabled: _zakatEnabled,
         onZakatChanged: _changeZakat,
+        dealerMarkup: _dealerMarkup,
+        dealerMarkupEnabled: _dealerMarkupEnabled,
+        onDealerMarkupChanged: _changeDealerMarkup,
+        onDealerMarkupEnabledChanged: _changeDealerMarkupEnabled,
       ),
     );
   }
@@ -123,6 +143,10 @@ class HomePage extends StatefulWidget {
   final Function(String) onLangChanged;
   final bool zakatEnabled;
   final Function(bool) onZakatChanged;
+  final double dealerMarkup;
+  final bool dealerMarkupEnabled;
+  final Function(double) onDealerMarkupChanged;
+  final Function(bool) onDealerMarkupEnabledChanged;
 
   const HomePage({
     super.key,
@@ -132,6 +156,10 @@ class HomePage extends StatefulWidget {
     required this.onLangChanged,
     required this.zakatEnabled,
     required this.onZakatChanged,
+    required this.dealerMarkup,
+    required this.dealerMarkupEnabled,
+    required this.onDealerMarkupChanged,
+    required this.onDealerMarkupEnabledChanged,
   });
 
   @override
@@ -207,7 +235,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         controller: _tabController,
         children: [
           CurrencyTab(langCode: widget.langCode),
-          GoldTab(langCode: widget.langCode, zakatEnabled: widget.zakatEnabled),
+          GoldTab(langCode: widget.langCode, zakatEnabled: widget.zakatEnabled, dealerMarkup: widget.dealerMarkup, dealerMarkupEnabled: widget.dealerMarkupEnabled),
           SettingsTab(
             currentTheme: widget.currentTheme,
             onThemeChanged: widget.onThemeChanged,
@@ -215,6 +243,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             onLangChanged: widget.onLangChanged,
             zakatEnabled: widget.zakatEnabled,
             onZakatChanged: widget.onZakatChanged,
+            dealerMarkup: widget.dealerMarkup,
+            dealerMarkupEnabled: widget.dealerMarkupEnabled,
+            onDealerMarkupChanged: widget.onDealerMarkupChanged,
+            onDealerMarkupEnabledChanged: widget.onDealerMarkupEnabledChanged,
           ),
           if (showDebug) const DebugModeCheck(),
         ],

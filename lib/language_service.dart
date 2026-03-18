@@ -123,6 +123,10 @@ class LanguageService {
       'zakat_basis': 'Grundlage: Händlerpreis',
       'zakat_close': 'Schließen',
       'zakat_empty': 'Keine Artikel im Warenkorb für die Zakat-Berechnung.',
+      // Händleraufschlag
+      'settings_dealer': 'Händleraufschlag',
+      'settings_dealer_sub': 'Aufschlag auf den Spot-Preis',
+      'settings_dealer_off': 'Kein Aufschlag (nur Spot)',
     },
     'en': {
       'app_title': 'Money Exchanger',
@@ -194,6 +198,9 @@ class LanguageService {
       'zakat_basis': 'Based on: Dealer price',
       'zakat_close': 'Close',
       'zakat_empty': 'No items in cart for Zakat calculation.',
+      'settings_dealer': 'Dealer Markup',
+      'settings_dealer_sub': 'Markup on spot price',
+      'settings_dealer_off': 'No markup (spot only)',
     },
     'tr': {
       'app_title': 'Money Exchanger',
@@ -265,6 +272,9 @@ class LanguageService {
       'zakat_basis': 'Dayanak: Bayi fiyatı',
       'zakat_close': 'Kapat',
       'zakat_empty': 'Zekât hesabı için sepette ürün yok.',
+      'settings_dealer': 'Satıcı Fiyat Farkı',
+      'settings_dealer_sub': 'Spot fiyatına eklenen fark',
+      'settings_dealer_off': 'Fark yok (yalnızca spot)',
     },
     'fr': {
       'app_title': 'Money Exchanger',
@@ -336,6 +346,9 @@ class LanguageService {
       'zakat_basis': 'Base: prix revendeur',
       'zakat_close': 'Fermer',
       'zakat_empty': 'Aucun article dans le panier pour le calcul de la zakat.',
+      'settings_dealer': 'Commission revendeur',
+      'settings_dealer_sub': 'Supplément au prix spot',
+      'settings_dealer_off': 'Pas de commission (spot uniquement)',
     },
     'es': {
       'app_title': 'Money Exchanger',
@@ -407,6 +420,9 @@ class LanguageService {
       'zakat_basis': 'Base: precio distribuidor',
       'zakat_close': 'Cerrar',
       'zakat_empty': 'No hay artículos en el carrito para calcular el zakat.',
+      'settings_dealer': 'Comisión del distribuidor',
+      'settings_dealer_sub': 'Suplemento al precio spot',
+      'settings_dealer_off': 'Sin comisión (solo spot)',
     },
   };
 }
