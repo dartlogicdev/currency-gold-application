@@ -91,6 +91,7 @@ Die App wurde von Entwicklern erstellt, die selbst zwischen verschiedenen Währu
 📞 SUPPORT & FEEDBACK
 
 Hast du Fragen, Wünsche oder Feedback? Wir freuen uns über deine Nachricht!
+E-Mail: dartlogic.dev@gmail.com
 GitHub: github.com/dartlogicdev/currency-gold-application
 
 
