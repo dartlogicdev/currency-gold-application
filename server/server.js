@@ -216,23 +216,32 @@ app.get('/gold', async (req, res) => {
 
     console.log('Fetching fresh gold data...');
     
-    // Goldpreis USD pro Unze
-    const goldResponse = await fetch('https://www.goldapi.io/api/XAU/USD', {
-      headers: { 'x-access-token': GOLD_API_KEY },
-    });
+    // Gold- und Silberpreis parallel abrufen
+    const [goldResponse, silverResponse] = await Promise.all([
+      fetch('https://www.goldapi.io/api/XAU/USD', { headers: { 'x-access-token': GOLD_API_KEY } }),
+      fetch('https://www.goldapi.io/api/XAG/USD', { headers: { 'x-access-token': GOLD_API_KEY } }),
+    ]);
     
     if (!goldResponse.ok) {
       throw new Error(`GoldAPI Error: ${goldResponse.status} ${goldResponse.statusText}`);
     }
     
     const goldData = await goldResponse.json();
-    console.log('GoldAPI Response:', goldData);
+    console.log('GoldAPI Response (Gold):', goldData);
 
     if (!goldData.price) throw new Error('Kein Preis von GoldAPI');
 
     const pricePerOzUSD = goldData.price;
     const pricePerGramUSD = pricePerOzUSD / 31.1035;
     await storeTodayGoldPrice(pricePerGramUSD);
+
+    // Silberpreis
+    let silverPricePerGramUSD = 0;
+    if (silverResponse.ok) {
+      const silverData = await silverResponse.json();
+      console.log('GoldAPI Response (Silber):', silverData);
+      if (silverData.price) silverPricePerGramUSD = silverData.price / 31.1035;
+    }
 
     // Wechselkurse USD -> EUR, TRY
     const rateResponse = await fetch(
@@ -246,7 +255,7 @@ app.get('/gold', async (req, res) => {
       TRY: rateData.rates.TRY || 32.0,
     };
 
-    // Berechnung pro Münze
+    // Berechnung pro Goldmünze
     const result = {};
     for (const [coin, data] of Object.entries(coins)) {
       const purity = data.karat / 24;
@@ -264,6 +273,26 @@ app.get('/gold', async (req, res) => {
       }
 
       result[coin] = coinEntry;
+    }
+
+    // Silber-Einträge
+    if (silverPricePerGramUSD > 0) {
+      const silverItems = {
+        'Silber (1g)': { weight: 1, karat: 24 },
+        'Silber (1kg)': { weight: 1000, karat: 24 },
+      };
+      for (const [name, data] of Object.entries(silverItems)) {
+        const silverEntry = { weight: data.weight, karat: data.karat, metal: 'silver' };
+        for (const [cur, rate] of Object.entries(rates)) {
+          const spot = data.weight * silverPricePerGramUSD * rate;
+          const dealer = spot * (1 + PREMIUM_PERCENT / 100);
+          silverEntry[cur] = {
+            spot: parseFloat(spot.toFixed(2)),
+            dealer: parseFloat(dealer.toFixed(2)),
+          };
+        }
+        result[name] = silverEntry;
+      }
     }
 
     const responseData = { 
