@@ -1,8 +1,12 @@
-✓ 40+ Währungen mit EZB-Kursen
-✓ Gold-Preisrechner mit Warenkorb
-✓ Favoriten-System
-✓ Dark Mode
-✓ Offline-Modus
+✓ 40+ Währungen mit offiziellen EZB-Kursen
+✓ Gold & Silber Preisrechner mit Warenkorb
+✓ Goldpreischart mit historischen Daten
+✓ Händleraufschlag konfigurierbar (1–5 %)
+✓ Zakat-Berechnung integriert
+✓ 5 Sprachen: Deutsch, Englisch, Türkisch, Französisch, Spanisch
+✓ Favoriten-System für Währungen
+✓ Dark Mode & Light Mode
+✓ Offline-Modus mit intelligentem Caching
 ✓ 100% werbefrei
 ✓ DSGVO-konform
-✓ Keine Registrierung
+✓ Keine Registrierung erforderlich

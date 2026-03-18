@@ -1,6 +1,6 @@
-💰 MONEY EXCHANGER - Dein smarter Begleiter für Währungen und Gold
+💰 MONEY EXCHANGER - Dein smarter Begleiter für Währungen, Gold & Silber
 
-Behalte den Überblick über globale Währungen und Goldpreise – jederzeit, überall und ohne Werbung. Money Exchanger kombiniert präzise Wechselkurse der Europäischen Zentralbank mit aktuellen Goldpreisen in einer eleganten, benutzerfreundlichen App.
+Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jederzeit, überall und ohne Werbung. Money Exchanger kombiniert präzise Wechselkurse der Europäischen Zentralbank mit aktuellen Edelmetallpreisen in einer eleganten, mehrsprachigen App.
 
 
 ✨ HAUPTFEATURES
@@ -14,19 +14,30 @@ Behalte den Überblick über globale Währungen und Goldpreise – jederzeit, ü
 • Copy-to-Clipboard: Konvertierte Beträge mit einem Tap kopieren
 • Trend-Anzeige: Auf einen Blick sehen, ob Kurse steigen oder fallen
 
-🪙 GOLD-PREISRECHNER
-• Aktuelle Preise für Goldmünzen und Barren in USD, EUR und TRY
-• Verschiedene Größen: Von 1g bis 1oz
-• Intelligenter Warenkorb: Sammle und kalkuliere deinen Gold-Einkauf
+🪙 GOLD & SILBER PREISRECHNER
+• Aktuelle Preise für Gold und Silber in USD, EUR und TRY
+• Gold (1g, 1kg, 1 oz) sowie türkische Goldmünzen
+• Silber (1g, 1kg) – ideal für Edelmetallvergleiche
+• Intelligenter Warenkorb: Sammle und kalkuliere deinen Einkauf
 • Persistenter Warenkorb: Deine Auswahl bleibt auch nach App-Neustart erhalten
 • Undo-Funktion: Versehentlich gelöschte Einträge wiederherstellen
-• Gramm-zu-Preis Umrechnung für präzise Kalkulation
+• Händleraufschlag einstellbar: 1–5 % für realistische Kaufpreise
+• Zakat-Berechnung integriert (2,5 % auf den Gesamtwert)
+
+📈 GOLDPREISCHART
+• Historische Goldpreisentwicklung auf einen Blick
+• Verschiedene Zeiträume wählbar
+• Direkt in der App, ohne externe Seiten
+
+🌍 MEHRSPRACHIG
+• Vollständig verfügbar auf Deutsch, Englisch, Türkisch, Französisch und Spanisch
+• Sprache jederzeit in den Einstellungen wechselbar
 
 🌙 MODERNE BENUTZEROBERFLÄCHE
-• Elegantes Dark Mode Design (automatisch nach Systemeinstellung)
+• Dark Mode & Light Mode (automatisch nach Systemeinstellung oder manuell)
 • Material Design 3 für intuitive Bedienung
 • Pull-to-Refresh für manuelle Aktualisierung
-• Cache-Anzeige: Sieh, wie aktuell deine Daten sind
+• Dezente Zeitstempel: Sieh, wann Daten zuletzt geladen wurden
 • Responsive Design für alle Bildschirmgrößen
 
 🔒 DATENSCHUTZ & SICHERHEIT
@@ -34,30 +45,31 @@ Behalte den Überblick über globale Währungen und Goldpreise – jederzeit, ü
 • Keine Cloud, keine Registrierung, keine persönlichen Daten
 • Offline-Modus: Zuletzt geladene Kurse bleiben verfügbar
 • Verschlüsselte HTTPS-Verbindungen zu unseren Servern
-• Keine Werbung, keine Tracker (in Version 1.0)
+• Keine Werbung, keine Tracker
 
-📈 DATENQUELLEN
+📡 DATENQUELLEN
 • Währungen: Europäische Zentralbank (EZB) via Frankfurter API
-• Gold: GoldAPI.io mit 10-minütigem Cache
-• Updates: Werktags zwischen 15:00-16:00 CET (EZB-Veröffentlichung)
+• Gold & Silber: GoldAPI.io mit intelligentem 24h-Cache
+• Updates: Werktags zwischen 15:00–16:00 CET (EZB-Veröffentlichung)
 
 
 🎯 PERFEKT FÜR
 
 • Reisende: Schnell Preise umrechnen im Urlaub
 • Forex-Interessierte: Kursentwicklung im Blick behalten
-• Gold-Investoren: Preise verschiedener Produkte vergleichen
-• Expats & internationale Familien: Heimat- und Zielwährung favourisieren
+• Gold- & Silber-Investoren: Preise vergleichen und kalkulieren
+• Muslime: Zakat auf Edelmetalle einfach berechnen
+• Expats & internationale Familien: Heimat- und Zielwährung favorisieren
 • Geschäftsleute: Professionelle Währungsumrechnung
-• Sparer: Gold als Wertanlage kalkulieren
+• Sparer: Edelmetalle als Wertanlage kalkulieren
 
 
-🚀 GEPLANTE FEATURES (V2)
+🚀 GEPLANTE FEATURES
 
-• Historische Charts mit Volatilitäts-Simulation
 • Export-Funktion für Warenkorb-Kalkulationen
-• Weitere Edelmetalle (Silber, Platin, Palladium)
+• Platin & Palladium
 • Push-Benachrichtigungen bei wichtigen Kursänderungen
+• Widget für den Startbildschirm
 
 
 📱 TECHNISCHE DETAILS
@@ -73,18 +85,17 @@ Behalte den Überblick über globale Währungen und Goldpreise – jederzeit, ü
 
 Während andere Apps mit Werbung überladen sind oder teure Abos verlangen, bietet Money Exchanger eine saubere, fokussierte Lösung. Wir konzentrieren uns auf das Wesentliche: präzise Daten, schnelle Bedienung und absolute Privatsphäre.
 
-Die App wurde von Entwicklern erstellt, die selbst zwischen verschiedenen Währungen jonglieren und Goldpreise verfolgen. Jedes Feature wurde aus echtem Bedarf heraus entwickelt.
+Die App wurde von Entwicklern erstellt, die selbst zwischen verschiedenen Währungen jonglieren und Goldpreise verfolgen. Jedes Feature wurde aus echtem Bedarf heraus entwickelt – und wird kostenlos angeboten.
 
 
 📞 SUPPORT & FEEDBACK
 
 Hast du Fragen, Wünsche oder Feedback? Wir freuen uns über deine Nachricht!
-E-Mail: [DEINE_EMAIL]
-GitHub: github.com/hasances/currency-gold-application
+GitHub: github.com/dartlogicdev/currency-gold-application
 
 
 🌟 LASS UNS WISSEN, WAS DU DENKST!
 
 Wenn dir Money Exchanger gefällt, hinterlasse bitte eine Bewertung. Dein Feedback hilft uns, die App kontinuierlich zu verbessern.
 
-Lade jetzt kostenlos herunter und behalte deine Finanzen im Griff! 💰
+Kostenlos herunterladen und Finanzen im Griff behalten! 💰
