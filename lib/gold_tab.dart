@@ -310,7 +310,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
     // Warenkorb als Text formatieren
     final buffer = StringBuffer();
-    buffer.writeln('🛒 Mein Gold-Kauf:\n');
+    buffer.writeln('🛒 ${LanguageService().t(\'gold_cart_title\')}\n');
 
     double totalSpot = 0;
     double totalDealer = 0;
@@ -333,26 +333,26 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           : item.quantity.toStringAsFixed(2);
 
       buffer.writeln('• ${item.coinName}: ${quantityStr}x');
-      buffer.writeln('  Spot: ${spotTotal.toStringAsFixed(2)} $selectedCurrency');
-      buffer.writeln('  Händler: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency\n');
+      buffer.writeln('  ${LanguageService().t(\'gold_spot\')}: ${spotTotal.toStringAsFixed(2)} $selectedCurrency');
+      buffer.writeln('  ${LanguageService().t(\'gold_dealer\')}: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency\n');
     }
 
     buffer.writeln('━━━━━━━━━━━━━━━━');
-    buffer.writeln('Gesamt Spot: ${totalSpot.toStringAsFixed(2)} $selectedCurrency');
-    buffer.writeln('Gesamt Händler: ${totalDealer.toStringAsFixed(2)} $selectedCurrency');
-    buffer.writeln('\n📱 Erstellt mit Currency Gold App');
+    buffer.writeln('${LanguageService().t(\'gold_total_spot\')}: ${totalSpot.toStringAsFixed(2)} $selectedCurrency');
+    buffer.writeln('${LanguageService().t(\'gold_total_dealer\')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency');
+    buffer.writeln('\n📱 ${LanguageService().t(\'gold_created_with\')}');
 
     // Haptic Feedback
     HapticService().selection();
 
     // Share
-    Share.share(buffer.toString(), subject: 'Mein Gold-Warenkorb');
+    Share.share(buffer.toString(), subject: LanguageService().t('gold_cart_title'));
 
     // Feedback
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Warenkorb geteilt'),
-        duration: Duration(seconds: 2),
+      SnackBar(
+        content: Text(LanguageService().t('gold_cart_shared')),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
