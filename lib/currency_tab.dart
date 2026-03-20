@@ -8,49 +8,7 @@ import 'config.dart';
 import 'haptic_service.dart';
 import 'language_service.dart';
 
-// Currency names (English – international standard)
-const Map<String, String> currencyNames = {
-  'EUR': 'Euro',
-  'USD': 'US Dollar',
-  'GBP': 'British Pound',
-  'CHF': 'Swiss Franc',
-  'JPY': 'Japanese Yen',
-  'CNY': 'Chinese Yuan',
-  'TRY': 'Turkish Lira',
-  'RUB': 'Russian Ruble',
-  'INR': 'Indian Rupee',
-  'BRL': 'Brazilian Real',
-  'ZAR': 'South African Rand',
-  'AUD': 'Australian Dollar',
-  'CAD': 'Canadian Dollar',
-  'NZD': 'New Zealand Dollar',
-  'SGD': 'Singapore Dollar',
-  'HKD': 'Hong Kong Dollar',
-  'KRW': 'South Korean Won',
-  'MXN': 'Mexican Peso',
-  'SEK': 'Swedish Krona',
-  'NOK': 'Norwegian Krone',
-  'DKK': 'Danish Krone',
-  'PLN': 'Polish Złoty',
-  'CZK': 'Czech Koruna',
-  'HUF': 'Hungarian Forint',
-  'RON': 'Romanian Leu',
-  'BGN': 'Bulgarian Lev',
-  'HRK': 'Croatian Kuna',
-  'ISK': 'Icelandic Króna',
-  'THB': 'Thai Baht',
-  'MYR': 'Malaysian Ringgit',
-  'IDR': 'Indonesian Rupiah',
-  'PHP': 'Philippine Peso',
-  'ILS': 'Israeli Shekel',
-  'AED': 'UAE Dirham',
-  'SAR': 'Saudi Riyal',
-  'EGP': 'Egyptian Pound',
-  'ARS': 'Argentine Peso',
-  'CLP': 'Chilean Peso',
-  'COP': 'Colombian Peso',
-  'PEN': 'Peruvian Sol',
-};
+// Währungsnamen werden lokalisiert aus LanguageService.getCurrencyName() bezogen.
 
 // Währungsflaggen (Unicode Regional Indicator Symbols)
 const Map<String, String> currencyFlags = {
@@ -182,7 +140,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     HapticService().light();
     
     // Feedback SnackBar
-    final currencyName = currencyNames[currency] ?? currency;
+    final currencyName = LanguageService().getCurrencyName(currency);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -296,7 +254,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
 
     final isFavorite = favorites.contains(currency);
     final flag = currencyFlags[currency] ?? '🏳️';
-    final fullName = currencyNames[currency] ?? currency;
+    final fullName = LanguageService().getCurrencyName(currency);
 
     return ListTile(
       leading: Row(
@@ -386,24 +344,22 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     final otherRates =
         rates.keys.where((c) => !displayFavorites.contains(c)).toList()..sort();
     
-    // Suchfilter anwenden
+    // Suchfilter: Code + lokalisierter Name + Länderkeywords
+    bool _matchesCurrency(String currency) {
+      final query = searchQuery.toLowerCase();
+      if (currency.toLowerCase().contains(query)) return true;
+      if (LanguageService().getCurrencyName(currency).toLowerCase().contains(query)) return true;
+      final keywords = LanguageService.currencyCountryKeywords[currency] ?? [];
+      return keywords.any((k) => k.contains(query));
+    }
+
     final filteredFavorites = searchQuery.isEmpty
         ? displayFavorites
-        : displayFavorites.where((currency) {
-            final query = searchQuery.toLowerCase();
-            final currencyLower = currency.toLowerCase();
-            final currencyName = currencyNames[currency]?.toLowerCase() ?? '';
-            return currencyLower.contains(query) || currencyName.contains(query);
-          }).toList();
+        : displayFavorites.where(_matchesCurrency).toList();
     
     final filteredOtherRates = searchQuery.isEmpty
         ? otherRates
-        : otherRates.where((currency) {
-            final query = searchQuery.toLowerCase();
-            final currencyLower = currency.toLowerCase();
-            final currencyName = currencyNames[currency]?.toLowerCase() ?? '';
-            return currencyLower.contains(query) || currencyName.contains(query);
-          }).toList();
+        : otherRates.where(_matchesCurrency).toList();
 
     // Alle Items für Dropdown
     final allItems = [...displayFavorites, ...otherRates];
