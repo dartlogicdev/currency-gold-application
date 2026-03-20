@@ -160,7 +160,7 @@ class LanguageService {
   static const Map<String, Map<String, String>> _translations = {
     'de': {
       // App
-      'app_title': 'Money Exchanger',
+      'app_title': 'KaratExchange',
       'tab_currency': 'Währung',
       'tab_gold': 'Gold',
       'tab_settings': 'Einstellungen',
@@ -239,7 +239,7 @@ class LanguageService {
       'settings_dealer_off': 'Kein Aufschlag (nur Spot)',
     },
     'en': {
-      'app_title': 'Money Exchanger',
+      'app_title': 'KaratExchange',
       'tab_currency': 'Currency',
       'tab_gold': 'Gold',
       'tab_settings': 'Settings',
@@ -313,7 +313,7 @@ class LanguageService {
       'settings_dealer_off': 'No markup (spot only)',
     },
     'tr': {
-      'app_title': 'Money Exchanger',
+      'app_title': 'KaratExchange',
       'tab_currency': 'Döviz',
       'tab_gold': 'Altın',
       'tab_settings': 'Ayarlar',
@@ -387,7 +387,7 @@ class LanguageService {
       'settings_dealer_off': 'Fark yok (yalnızca spot)',
     },
     'fr': {
-      'app_title': 'Money Exchanger',
+      'app_title': 'KaratExchange',
       'tab_currency': 'Devises',
       'tab_gold': 'Or',
       'tab_settings': 'Paramètres',
@@ -461,7 +461,7 @@ class LanguageService {
       'settings_dealer_off': 'Pas de commission (spot uniquement)',
     },
     'es': {
-      'app_title': 'Money Exchanger',
+      'app_title': 'KaratExchange',
       'tab_currency': 'Divisas',
       'tab_gold': 'Oro',
       'tab_settings': 'Ajustes',

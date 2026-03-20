@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Money Exchanger'),
+        title: const Text('KaratExchange'),
         bottom: TabBar(
           controller: _tabController,
           tabs: [
