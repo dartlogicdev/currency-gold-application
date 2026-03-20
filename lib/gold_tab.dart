@@ -38,7 +38,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   Map<String, dynamic> coins = {};
   String selectedCoin = '';
   String selectedCurrency = 'USD';
-  final currencies = ['USD', 'EUR', 'TRY'];
+  final currencies = ['USD', 'EUR', 'TRY', 'GBP', 'CHF', 'JPY', 'AUD', 'CAD', 'INR', 'SAR', 'AED'];
   bool loading = true;
 
   // Cache-Metadaten

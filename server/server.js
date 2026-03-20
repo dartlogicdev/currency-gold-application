@@ -243,16 +243,24 @@ app.get('/gold', async (req, res) => {
       if (silverData.price) silverPricePerGramUSD = silverData.price / 31.1035;
     }
 
-    // Wechselkurse USD -> EUR, TRY
+    // Wechselkurse USD -> weitere Währungen
     const rateResponse = await fetch(
-      'https://api.frankfurter.app/latest?from=USD&to=EUR,TRY'
+      'https://api.frankfurter.app/latest?from=USD&to=EUR,TRY,GBP,CHF,JPY,AUD,CAD,INR'
     );
     const rateData = await rateResponse.json();
 
     const rates = {
       USD: 1,
       EUR: rateData.rates.EUR || 0.93,
-      TRY: rateData.rates.TRY || 32.0,
+      TRY: rateData.rates.TRY || 34.0,
+      GBP: rateData.rates.GBP || 0.79,
+      CHF: rateData.rates.CHF || 0.90,
+      JPY: rateData.rates.JPY || 149.0,
+      AUD: rateData.rates.AUD || 1.53,
+      CAD: rateData.rates.CAD || 1.36,
+      INR: rateData.rates.INR || 83.0,
+      SAR: 3.75,  // Fest an USD gekoppelt
+      AED: 3.67,  // Fest an USD gekoppelt
     };
 
     // Berechnung pro Goldmünze
@@ -316,7 +324,7 @@ app.get('/gold', async (req, res) => {
 
     // Fallback-Testwerte als letzte Option
     console.log('Using fallback test values');
-    const testRates = { USD: 1, EUR: 0.93, TRY: 32 };
+    const testRates = { USD: 1, EUR: 0.93, TRY: 34, GBP: 0.79, CHF: 0.90, JPY: 149, AUD: 1.53, CAD: 1.36, INR: 83, SAR: 3.75, AED: 3.67 };
     const testPricePerGramUSD = 90; // ~2800 USD/oz ≈ 90 USD/g (aktualisiert Feb 2026)
 
     const fallbackResult = {};
