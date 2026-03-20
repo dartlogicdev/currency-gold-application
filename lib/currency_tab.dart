@@ -86,6 +86,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
   final TextEditingController searchController = TextEditingController();
   String searchQuery = '';
 
+  // Toast Overlay
+  OverlayEntry? _currentToast;
+
   @override
   void initState() {
     super.initState();
@@ -104,6 +107,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
 
   @override
   void dispose() {
+    _currentToast?.remove();
     updateTimer?.cancel();
     searchController.dispose();
     super.dispose();
@@ -139,19 +143,46 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     // Haptic Feedback
     HapticService().light();
     
-    // Feedback SnackBar
+    // Feedback Toast
     final currencyName = LanguageService().getCurrencyName(currency);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          wasInFavorites
-            ? '$currencyName ${LanguageService().t('currency_fav_removed')}'
-            : '$currencyName ${LanguageService().t('currency_fav_added')}'
+    _showToast(wasInFavorites
+        ? '$currencyName ${LanguageService().t('currency_fav_removed')}'
+        : '$currencyName ${LanguageService().t('currency_fav_added')}');
+  }
+
+  void _showToast(String message) {
+    _currentToast?.remove();
+    _currentToast = null;
+    if (!mounted) return;
+    final overlay = Overlay.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    _currentToast = OverlayEntry(
+      builder: (ctx) => Positioned(
+        top: MediaQuery.of(ctx).padding.top + 60,
+        left: 24,
+        right: 24,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: colorScheme.inverseSurface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colorScheme.onInverseSurface),
+            ),
+          ),
         ),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
       ),
     );
+    overlay.insert(_currentToast!);
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      _currentToast?.remove();
+      _currentToast = null;
+    });
   }
 
   Future<void> loadRates() async {
@@ -310,9 +341,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
               Clipboard.setData(
                 ClipboardData(text: converted.toStringAsFixed(2)),
               );
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$currency ${LanguageService().t('currency_copied')}')),
-              );
+              _showToast('$currency ${LanguageService().t('currency_copied')}');
             },
           ),
         ],
@@ -438,14 +467,9 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
                       setState(() => loading = true);
                       await fetchRates();
                       if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(lastUpdateDate != null
-                                ? '${LanguageService().t('currency_updated')}: $lastUpdateDate'
-                                : LanguageService().t('currency_updated')),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
+                        _showToast(lastUpdateDate != null
+                            ? '${LanguageService().t('currency_updated')}: $lastUpdateDate'
+                            : LanguageService().t('currency_updated'));
                       }
                     },
                   ),

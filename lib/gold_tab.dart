@@ -56,10 +56,19 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   // Undo Snapshot (kompletter Zustand)
   List<GoldItem> undoSnapshot = [];
 
+  // Toast Overlay
+  OverlayEntry? _currentToast;
+
   @override
   void initState() {
     super.initState();
     _initialize();
+  }
+
+  @override
+  void dispose() {
+    _currentToast?.remove();
+    super.dispose();
   }
 
   Future<void> _initialize() async {
@@ -235,14 +244,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     // Haptic Feedback
     HapticService().medium();
     
-    // Feedback SnackBar
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${LanguageService().translateCoin(selectedCoin)} ${LanguageService().t('gold_added_to_cart')}'),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    // Feedback Toast
+    _showToast('${LanguageService().translateCoin(selectedCoin)} ${LanguageService().t('gold_added_to_cart')}');
   }
 
   void removeItem(int index) {
@@ -348,13 +351,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     // Share
     Share.share(buffer.toString(), subject: LanguageService().t('gold_cart_title'));
 
-    // Feedback
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(LanguageService().t('gold_cart_shared')),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    // Feedback Toast
+    _showToast(LanguageService().t('gold_cart_shared'));
   }
 
   void showZakatDialog() {
@@ -467,7 +465,43 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     saveCart();
   }
 
+  void _showToast(String message) {
+    _currentToast?.remove();
+    _currentToast = null;
+    if (!mounted) return;
+    final overlay = Overlay.of(context);
+    final colorScheme = Theme.of(context).colorScheme;
+    _currentToast = OverlayEntry(
+      builder: (ctx) => Positioned(
+        top: MediaQuery.of(ctx).padding.top + 60,
+        left: 24,
+        right: 24,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              color: colorScheme.inverseSurface,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: colorScheme.onInverseSurface),
+            ),
+          ),
+        ),
+      ),
+    );
+    overlay.insert(_currentToast!);
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      _currentToast?.remove();
+      _currentToast = null;
+    });
+  }
+
   void showUndoSnackBar(String text) {
+    ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(text),
