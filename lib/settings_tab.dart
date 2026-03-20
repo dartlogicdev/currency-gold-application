@@ -140,19 +140,19 @@ class _SettingsTabState extends State<SettingsTab> {
                   const SizedBox(height: 16),
 
                   RadioListTile<ThemeMode>(
-                    title: Row(children: [const Icon(Icons.light_mode, size: 20), const SizedBox(width: 12), Text(l.t('settings_light'))]),
+                    title: Row(children: [const Icon(Icons.light_mode, size: 20), const SizedBox(width: 12), Flexible(child: Text(l.t('settings_light')))]),
                     value: ThemeMode.light,
                     groupValue: widget.currentTheme,
                     onChanged: (mode) { if (mode != null) { HapticService().selection(); widget.onThemeChanged(mode); } },
                   ),
                   RadioListTile<ThemeMode>(
-                    title: Row(children: [const Icon(Icons.dark_mode, size: 20), const SizedBox(width: 12), Text(l.t('settings_dark'))]),
+                    title: Row(children: [const Icon(Icons.dark_mode, size: 20), const SizedBox(width: 12), Flexible(child: Text(l.t('settings_dark')))]),
                     value: ThemeMode.dark,
                     groupValue: widget.currentTheme,
                     onChanged: (mode) { if (mode != null) { HapticService().selection(); widget.onThemeChanged(mode); } },
                   ),
                   RadioListTile<ThemeMode>(
-                    title: Row(children: [const Icon(Icons.settings_suggest, size: 20), const SizedBox(width: 12), Text(l.t('settings_system'))]),
+                    title: Row(children: [const Icon(Icons.settings_suggest, size: 20), const SizedBox(width: 12), Flexible(child: Text(l.t('settings_system')))]),
                     subtitle: Padding(
                       padding: const EdgeInsets.only(left: 32, top: 4),
                       child: Text(l.t('settings_system_sub'), style: const TextStyle(fontSize: 12)),
@@ -186,21 +186,21 @@ class _SettingsTabState extends State<SettingsTab> {
                   const SizedBox(height: 16),
 
                   RadioListTile<HapticLevel>(
-                    title: Row(children: [const Icon(Icons.vibration, size: 20), const SizedBox(width: 12), Text(l.t('settings_haptic_all'))]),
+                    title: Row(children: [const Icon(Icons.vibration, size: 20), const SizedBox(width: 12), Flexible(child: Text(l.t('settings_haptic_all')))]),
                     subtitle: Padding(padding: const EdgeInsets.only(left: 32, top: 4), child: Text(l.t('settings_haptic_all_sub'), style: const TextStyle(fontSize: 12))),
                     value: HapticLevel.all,
                     groupValue: _hapticLevel,
                     onChanged: (level) { if (level != null) _setHapticLevel(level); },
                   ),
                   RadioListTile<HapticLevel>(
-                    title: Row(children: [const Icon(Icons.notification_important, size: 20), const SizedBox(width: 12), Text(l.t('settings_haptic_important'))]),
+                    title: Row(children: [const Icon(Icons.notification_important, size: 20), const SizedBox(width: 12), Flexible(child: Text(l.t('settings_haptic_important')))]),
                     subtitle: Padding(padding: const EdgeInsets.only(left: 32, top: 4), child: Text(l.t('settings_haptic_important_sub'), style: const TextStyle(fontSize: 12))),
                     value: HapticLevel.important,
                     groupValue: _hapticLevel,
                     onChanged: (level) { if (level != null) _setHapticLevel(level); },
                   ),
                   RadioListTile<HapticLevel>(
-                    title: Row(children: [const Icon(Icons.vibration_outlined, size: 20), const SizedBox(width: 12), Text(l.t('settings_haptic_off'))]),
+                    title: Row(children: [const Icon(Icons.vibration_outlined, size: 20), const SizedBox(width: 12), Flexible(child: Text(l.t('settings_haptic_off')))]),
                     subtitle: Padding(padding: const EdgeInsets.only(left: 32, top: 4), child: Text(l.t('settings_haptic_off_sub'), style: const TextStyle(fontSize: 12))),
                     value: HapticLevel.off,
                     groupValue: _hapticLevel,

@@ -23,10 +23,18 @@ class LanguageService {
     if (saved != null) {
       _langCode = saved;
     } else {
-      // Systemsprache automatisch erkennen
-      final systemCode = PlatformDispatcher.instance.locale.languageCode;
+      // Systemsprache automatisch erkennen – alle Locales prüfen (Fallback-Kette)
       const supported = ['de', 'en', 'tr', 'fr', 'es'];
-      _langCode = supported.contains(systemCode) ? systemCode : 'en';
+      final systemLocales = PlatformDispatcher.instance.locales;
+      String detected = 'en';
+      for (final locale in systemLocales) {
+        final code = locale.languageCode;
+        if (supported.contains(code)) {
+          detected = code;
+          break;
+        }
+      }
+      _langCode = detected;
     }
   }
 
