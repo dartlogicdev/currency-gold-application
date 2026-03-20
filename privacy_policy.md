@@ -126,7 +126,7 @@ Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf zu aktualisieren. W
 
 Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 
-**E-Mail:** support@moneyexchanger.app
+**E-Mail:** dartlogic.dev@gmail.com
 
 ---
 
@@ -150,6 +150,6 @@ Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 
 **Your Rights:**
 - Delete all data by clearing app data in Android settings
-- Contact us for questions: support@moneyexchanger.app
+- Contact us for questions: dartlogic.dev@gmail.com
 
 **Last Updated:** February 20, 2026
