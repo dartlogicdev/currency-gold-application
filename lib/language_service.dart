@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageService {
@@ -18,7 +19,15 @@ class LanguageService {
 
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
-    _langCode = prefs.getString(_key) ?? 'de';
+    final saved = prefs.getString(_key);
+    if (saved != null) {
+      _langCode = saved;
+    } else {
+      // Systemsprache automatisch erkennen
+      final systemCode = PlatformDispatcher.instance.locale.languageCode;
+      const supported = ['de', 'en', 'tr', 'fr', 'es'];
+      _langCode = supported.contains(systemCode) ? systemCode : 'en';
+    }
   }
 
   Future<void> setLanguage(String code) async {
