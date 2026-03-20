@@ -1,15 +1,16 @@
 # Datenschutzerklärung / Privacy Policy
 
 **Money Exchanger - Währungen & Gold**  
-**Zuletzt aktualisiert:** 20. Februar 2026
+**Zuletzt aktualisiert:** 20. März 2026
 
 ## 1. Einleitung
 
 Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie darüber, welche Daten die App "Money Exchanger" erfasst, wie diese verwendet werden und welche Rechte Sie haben.
 
 **Verantwortlicher:**  
-Money Exchanger Development  
-E-Mail: support@moneyexchanger.app
+DartLogic Dev  
+E-Mail: dartlogic.dev@gmail.com  
+GitHub: github.com/dartlogicdev/currency-gold-application
 
 ## 2. Welche Daten werden erfasst?
 
@@ -18,7 +19,10 @@ E-Mail: support@moneyexchanger.app
 Die App speichert folgende Daten **ausschließlich lokal** auf Ihrem Gerät:
 
 - **Währungsfavoriten:** Ihre bevorzugten Währungen
-- **Gold-Warenkorb:** Ihre gespeicherten Gold-Artikel
+- **Gold- & Silber-Warenkorb:** Ihre gespeicherten Edelmetall-Artikel
+- **Händleraufschlag-Einstellung:** Ihr konfigurierter Aufschlag (1–5 %)
+- **Zakat-Einstellung:** Ob die Zakat-Berechnung aktiv ist
+- **Spracheinstellung:** Ihre gewählte App-Sprache
 - **Nutzungsstatistiken (optional):** 
   - App-Öffnungen
   - Angezeigte Tabs
@@ -33,15 +37,15 @@ Die App ruft aktuelle Wechselkurse und Goldpreise von folgenden Quellen ab:
 
 **Wechselkurse:**
 - **Quelle:** Frankfurter.app (Europäische Zentralbank)
-- **Server:** https://currency-gold-application.onrender.com/rates
+- **Server:** https://currency-gold-application-j7ax.onrender.com/rates
 - **Übertragene Daten:** Keine persönlichen Daten, nur technische Anfrage-Header (IP-Adresse durch Server-Relay verschleiert)
 - **Zweck:** Anzeige aktueller Wechselkurse
 
-**Goldpreise:**
+**Gold- & Silberpreise:**
 - **Quelle:** GoldAPI.io (via eigener Server)
-- **Server:** https://currency-gold-application.onrender.com/gold
+- **Server:** https://currency-gold-application-j7ax.onrender.com/gold
 - **Übertragene Daten:** Keine persönlichen Daten
-- **Zweck:** Anzeige aktueller Goldpreise
+- **Zweck:** Anzeige aktueller Gold- und Silberpreise
 
 ### 2.3 Keine Nutzerkonten
 
@@ -84,7 +88,7 @@ Wir setzen angemessene technische und organisatorische Maßnahmen ein:
 
 - **HTTPS-Verschlüsselung** für alle Server-Kommunikationen
 - **Keine Cloud-Speicherung** sensibler Daten
-- **Open-Source-Transparenz** (Code auf GitHub verfügbar für Sicherheitsanalysen)
+- **Open-Source-Transparenz** (Code auf GitHub verfügbar: github.com/dartlogicdev/currency-gold-application)
 - **Minimale Berechtigungen** (nur Internet-Zugriff erforderlich)
 
 ## 7. Berechtigungen
@@ -116,7 +120,7 @@ Die App richtet sich an Nutzer ab 16 Jahren. Wir erfassen wissentlich keine Date
 
 Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf zu aktualisieren. Wesentliche Änderungen werden in der App kommuniziert.
 
-**Letzte Änderung:** 20. Februar 2026
+**Letzte Änderung:** 20. März 2026
 
 ## 11. Kontakt
 
