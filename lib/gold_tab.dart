@@ -310,7 +310,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
     // Warenkorb als Text formatieren
     final buffer = StringBuffer();
-    buffer.writeln('🛒 ${LanguageService().t(\'gold_cart_title\')}\n');
+    buffer.writeln("🛒 ${LanguageService().t('gold_cart_title')}\n");
 
     double totalSpot = 0;
     double totalDealer = 0;
@@ -333,14 +333,14 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           : item.quantity.toStringAsFixed(2);
 
       buffer.writeln('• ${item.coinName}: ${quantityStr}x');
-      buffer.writeln('  ${LanguageService().t(\'gold_spot\')}: ${spotTotal.toStringAsFixed(2)} $selectedCurrency');
-      buffer.writeln('  ${LanguageService().t(\'gold_dealer\')}: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency\n');
+      buffer.writeln("  ${LanguageService().t('gold_spot')}: ${spotTotal.toStringAsFixed(2)} $selectedCurrency");
+      buffer.writeln("  ${LanguageService().t('gold_dealer')}: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency\n");
     }
 
     buffer.writeln('━━━━━━━━━━━━━━━━');
-    buffer.writeln('${LanguageService().t(\'gold_total_spot\')}: ${totalSpot.toStringAsFixed(2)} $selectedCurrency');
-    buffer.writeln('${LanguageService().t(\'gold_total_dealer\')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency');
-    buffer.writeln('\n📱 ${LanguageService().t(\'gold_created_with\')}');
+    buffer.writeln("${LanguageService().t('gold_total_spot')}: ${totalSpot.toStringAsFixed(2)} $selectedCurrency");
+    buffer.writeln("${LanguageService().t('gold_total_dealer')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency");
+    buffer.writeln("\n📱 ${LanguageService().t('gold_created_with')}");
 
     // Haptic Feedback
     HapticService().selection();
