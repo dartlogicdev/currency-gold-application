@@ -81,9 +81,9 @@ Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jede
 • Schnelle Ladezeiten durch effiziente API-Calls
 
 
-💡 WARUM MONEY EXCHANGER?
+💡 WARUM KARATEXCHANGE?
 
-Während andere Apps mit Werbung überladen sind oder teure Abos verlangen, bietet Money Exchanger eine saubere, fokussierte Lösung. Wir konzentrieren uns auf das Wesentliche: präzise Daten, schnelle Bedienung und absolute Privatsphäre.
+Während andere Apps mit Werbung überladen sind oder teure Abos verlangen, bietet KaratExchange eine saubere, fokussierte Lösung. Wir konzentrieren uns auf das Wesentliche: präzise Daten, schnelle Bedienung und absolute Privatsphäre.
 
 Die App wurde von Entwicklern erstellt, die selbst zwischen verschiedenen Währungen jonglieren und Goldpreise verfolgen. Jedes Feature wurde aus echtem Bedarf heraus entwickelt – und wird kostenlos angeboten.
 
@@ -97,6 +97,6 @@ GitHub: github.com/dartlogicdev/currency-gold-application
 
 🌟 LASS UNS WISSEN, WAS DU DENKST!
 
-Wenn dir Money Exchanger gefällt, hinterlasse bitte eine Bewertung. Dein Feedback hilft uns, die App kontinuierlich zu verbessern.
+Wenn dir KaratExchange gefällt, hinterlasse bitte eine Bewertung. Dein Feedback hilft uns, die App kontinuierlich zu verbessern.
 
 Kostenlos herunterladen und Finanzen im Griff behalten! 💰

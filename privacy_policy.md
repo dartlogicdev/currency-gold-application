@@ -1,11 +1,11 @@
 # Datenschutzerklärung / Privacy Policy
 
-**Money Exchanger - Währungen & Gold**  
+**KaratExchange - Gold & Währungen**  
 **Zuletzt aktualisiert:** 20. März 2026
 
 ## 1. Einleitung
 
-Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie darüber, welche Daten die App "Money Exchanger" erfasst, wie diese verwendet werden und welche Rechte Sie haben.
+Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Diese Datenschutzerklärung informiert Sie darüber, welche Daten die App "KaratExchange" erfasst, wie diese verwendet werden und welche Rechte Sie haben.
 
 **Verantwortlicher:**  
 DartLogic Dev  
@@ -79,7 +79,7 @@ Wir geben **keine Daten** an Dritte weiter. Die App nutzt:
 - Server-seitige Logs (technische API-Anfragen) werden nach 7 Tagen automatisch gelöscht
 
 **Daten löschen:**
-- Android: Einstellungen → Apps → Money Exchanger → Speicher → Daten löschen
+- Android: Einstellungen → Apps → KaratExchange → Speicher → Daten löschen
 - Oder: App deinstallieren
 
 ## 6. Sicherheit

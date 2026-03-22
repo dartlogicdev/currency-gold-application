@@ -1,4 +1,4 @@
-# Store Listing Assets für Money Exchanger
+# Store Listing Assets für KaratExchange
 
 Dieser Ordner enthält alle Texte für die Veröffentlichung im Google Play Store.
 
@@ -7,7 +7,7 @@ Dieser Ordner enthält alle Texte für die Veröffentlichung im Google Play Stor
 ### 📝 store_title.txt
 **Verwendung:** App-Titel im Store (max. 80 Zeichen)
 ```
-Money Exchanger - Währungen & Gold: Live-Kurse und Preisvergleich
+KaratExchange - Gold & Währungen: Live-Kurse und Preisvergleich
 ```
 
 ### 📄 store_short_description.txt
@@ -53,7 +53,7 @@ Aktuelle Wechselkurse & Goldpreise. Favoriten, Warenkorb, Offline-Modus.
 - [ ] Sprachen: Deutsch (evtl. später Englisch, Türkisch)
 
 ### 🔧 Technische Vorbereitung
-- [ ] Application ID ändern: `com.example.*` → `de.yourname.moneyexchanger`
+- [x] Application ID: `dev.dartlogic.currencygold` ✅
 - [ ] Signing Key erstellen und in build.gradle.kts konfigurieren
 - [ ] `usesCleartextTraffic="false"` setzen (Server nutzt HTTPS)
 - [ ] Versionierung prüfen (aktuell: 1.0.0+1)

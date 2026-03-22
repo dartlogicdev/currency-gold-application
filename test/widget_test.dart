@@ -15,7 +15,7 @@ void main() {
     await tester.pumpWidget(const MyApp());
 
     // Verify that the app title is present
-    expect(find.text('Money Exchanger'), findsOneWidget);
+    expect(find.text('KaratExchange'), findsOneWidget);
 
     // Verify that both tabs are present
     expect(find.text('Currency'), findsOneWidget);
