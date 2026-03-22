@@ -152,4 +152,4 @@ Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 - Delete all data by clearing app data in Android settings
 - Contact us for questions: dartlogic.dev@gmail.com
 
-**Last Updated:** February 20, 2026
+**Last Updated:** March 20, 2026
