@@ -35,7 +35,7 @@ class Config {
 
   // Rechtliches
   static const String privacyPolicyUrl =
-      'https://dartlogicdev.github.io/privacy-policy/';
+      'https://dartlogicdev.github.io/currency-gold-application/privacy_policy.html';
 }
 
 // Beispiel-Nutzung in anderen Dateien:
