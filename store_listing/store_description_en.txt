@@ -1,0 +1,85 @@
+💰 KARATEXCHANGE – Your Smart Companion for Currencies, Gold & Silver
+
+Stay on top of global exchange rates and gold & silver prices – anytime, anywhere, completely ad-free. KaratExchange combines precise exchange rates from the European Central Bank with live precious metal prices in one elegant, multilingual app.
+
+
+✨ KEY FEATURES
+
+📊 CURRENCY CONVERTER
+• 40+ international currencies (EUR, USD, TRY, GBP, CHF, JPY and many more)
+• Official ECB reference rates, updated daily
+• Country flags and full currency names for a clear overview
+• Favourites system: Star your most important currencies
+• Convert any amount with real-time calculation
+• Copy to clipboard: Copy converted amounts with a single tap
+• Trend indicator: See at a glance whether rates are rising or falling
+• Offline mode: Last loaded rates remain available without internet
+
+🪙 GOLD & SILVER PRICE CALCULATOR
+• Live prices for gold and silver in USD, EUR, TRY, GBP, CHF, JPY and more
+• Gold (1g, 1kg, 1 oz) as well as Turkish gold coins
+• Silver (1g, 1kg) – ideal for precious metal comparisons
+• Smart shopping cart: Collect and calculate your purchases
+• Persistent cart: Your selection is saved even after restarting the app
+• Undo function: Restore accidentally deleted items
+• Adjustable dealer margin: 1–5 % for realistic purchase prices
+• Integrated Zakat calculator (2.5 % of total value)
+• Share function: Share your cart results directly
+
+🌍 MULTILINGUAL
+• Fully available in German, English, Turkish, French and Spanish
+• Switch language at any time in settings
+
+🌙 MODERN INTERFACE
+• Dark Mode & Light Mode (automatic based on system setting or manual)
+• Material Design 3 for intuitive navigation
+• Pull-to-refresh for manual updates
+• Adjustable haptic feedback (off / light / full)
+• Responsive design for all screen sizes
+
+🔒 PRIVACY & SECURITY
+• 100% GDPR compliant: All data stays locally on your device
+• No cloud, no account, no personal data collected
+• Encrypted HTTPS connections to our servers
+• No adverts, no trackers
+
+📡 DATA SOURCES
+• Currencies: European Central Bank (ECB) via Frankfurter API
+• Gold & Silver: GoldAPI.io with intelligent 24h cache
+• Updates: Weekdays between 15:00–16:00 CET (ECB publication)
+
+
+🎯 PERFECT FOR
+
+• Travellers: Quickly convert prices on holiday
+• Forex enthusiasts: Keep track of rate movements
+• Gold & Silver investors: Compare and calculate prices
+• Muslims: Easily calculate Zakat on precious metals
+• Expats & international families: Favourite your home and target currencies
+• Business professionals: Professional currency conversion
+• Savers: Calculate precious metals as an investment
+
+
+🚀 PLANNED FEATURES
+
+• Gold price chart with historical price development
+• Export function for cart calculations
+• Platinum & Palladium
+• Push notifications for significant rate changes
+• Home screen widget
+
+
+💡 WHY KARATEXCHANGE?
+
+While other apps are overloaded with adverts or require expensive subscriptions, KaratExchange offers a clean, focused solution. We concentrate on what matters: precise data, fast performance and complete privacy.
+
+The app was built by developers who themselves juggle multiple currencies and track gold prices daily. Every feature was developed from a real need – and is offered completely free of charge.
+
+
+📞 SUPPORT & FEEDBACK
+
+Questions, requests or feedback? We'd love to hear from you!
+E-mail: dartlogic.dev@gmail.com
+GitHub: github.com/dartlogicdev/currency-gold-application
+
+Download for free and keep your finances under control! 💰
