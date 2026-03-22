@@ -1,4 +1,4 @@
-💰 KARATEXCHANGE - Dein smarter Begleiter für Währungen, Gold & Silber
+💰 KARATEXCHANGE – Dein smarter Begleiter für Währungen, Gold & Silber
 
 Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jederzeit, überall und ohne Werbung. KaratExchange kombiniert präzise Wechselkurse der Europäischen Zentralbank mit aktuellen Edelmetallpreisen in einer eleganten, mehrsprachigen App.
 
@@ -13,21 +13,18 @@ Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jede
 • Beliebige Beträge umrechnen mit Echtzeit-Berechnung
 • Copy-to-Clipboard: Konvertierte Beträge mit einem Tap kopieren
 • Trend-Anzeige: Auf einen Blick sehen, ob Kurse steigen oder fallen
+• Offline-Modus: Zuletzt geladene Kurse bleiben verfügbar
 
 🪙 GOLD & SILBER PREISRECHNER
-• Aktuelle Preise für Gold und Silber in USD, EUR und TRY
+• Aktuelle Preise für Gold und Silber in USD, EUR, TRY, GBP, CHF, JPY und mehr
 • Gold (1g, 1kg, 1 oz) sowie türkische Goldmünzen
 • Silber (1g, 1kg) – ideal für Edelmetallvergleiche
 • Intelligenter Warenkorb: Sammle und kalkuliere deinen Einkauf
 • Persistenter Warenkorb: Deine Auswahl bleibt auch nach App-Neustart erhalten
 • Undo-Funktion: Versehentlich gelöschte Einträge wiederherstellen
-• Händleraufschlag einstellbar: 1–5 % für realistische Kaufpreise
-• Zakat-Berechnung integriert (2,5 % auf den Gesamtwert)
-
-📈 GOLDPREISCHART
-• Historische Goldpreisentwicklung auf einen Blick
-• Verschiedene Zeiträume wählbar
-• Direkt in der App, ohne externe Seiten
+• Händleraufschlag einstellbar: 1–5 % für realistische Kaufpreise
+• Zakat-Berechnung integriert (2,5 % auf den Gesamtwert)
+• Teilen-Funktion: Warenkorb-Ergebnisse direkt teilen
 
 🌍 MEHRSPRACHIG
 • Vollständig verfügbar auf Deutsch, Englisch, Türkisch, Französisch und Spanisch
@@ -37,13 +34,12 @@ Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jede
 • Dark Mode & Light Mode (automatisch nach Systemeinstellung oder manuell)
 • Material Design 3 für intuitive Bedienung
 • Pull-to-Refresh für manuelle Aktualisierung
-• Dezente Zeitstempel: Sieh, wann Daten zuletzt geladen wurden
+• Haptisches Feedback einstellbar (aus / leicht / voll)
 • Responsive Design für alle Bildschirmgrößen
 
 🔒 DATENSCHUTZ & SICHERHEIT
 • 100% DSGVO-konform: Alle Daten bleiben lokal auf deinem Gerät
 • Keine Cloud, keine Registrierung, keine persönlichen Daten
-• Offline-Modus: Zuletzt geladene Kurse bleiben verfügbar
 • Verschlüsselte HTTPS-Verbindungen zu unseren Servern
 • Keine Werbung, keine Tracker
 
@@ -66,19 +62,11 @@ Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jede
 
 🚀 GEPLANTE FEATURES
 
+• Goldpreischart mit historischer Preisentwicklung
 • Export-Funktion für Warenkorb-Kalkulationen
 • Platin & Palladium
 • Push-Benachrichtigungen bei wichtigen Kursänderungen
 • Widget für den Startbildschirm
-
-
-📱 TECHNISCHE DETAILS
-
-• Minimale Berechtigungen: Nur Internet-Zugriff
-• Geringer Speicherbedarf: < 50 MB
-• Optimiert für Android 5.0+ (API 21+)
-• Offline-Funktionalität mit intelligentem Caching
-• Schnelle Ladezeiten durch effiziente API-Calls
 
 
 💡 WARUM KARATEXCHANGE?
@@ -90,13 +78,8 @@ Die App wurde von Entwicklern erstellt, die selbst zwischen verschiedenen Währu
 
 📞 SUPPORT & FEEDBACK
 
-Hast du Fragen, Wünsche oder Feedback? Wir freuen uns über deine Nachricht!
+Hast du Fragen, Wünsche oder Feedback?
 E-Mail: dartlogic.dev@gmail.com
 GitHub: github.com/dartlogicdev/currency-gold-application
-
-
-🌟 LASS UNS WISSEN, WAS DU DENKST!
-
-Wenn dir KaratExchange gefällt, hinterlasse bitte eine Bewertung. Dein Feedback hilft uns, die App kontinuierlich zu verbessern.
 
 Kostenlos herunterladen und Finanzen im Griff behalten! 💰

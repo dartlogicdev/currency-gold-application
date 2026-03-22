@@ -1,0 +1,85 @@
+💰 KARATEXCHANGE – Döviz, Altın & Gümüş için Akıllı Yardımcın
+
+Küresel döviz kurlarını, altın ve gümüş fiyatlarını her zaman, her yerde ve reklamsız takip et. KaratExchange, Avrupa Merkez Bankası'nın kesin döviz kurlarını güncel değerli metal fiyatlarıyla şık ve çok dilli bir uygulamada birleştiriyor.
+
+
+✨ TEMEL ÖZELLİKLER
+
+📊 DÖVİZ HESAPLAYICI
+• 40'tan fazla uluslararası döviz (EUR, USD, TRY, GBP, CHF, JPY ve daha fazlası)
+• Günlük güncellenen resmi AMB referans kurları
+• Daha iyi genel bakış için ülke bayrakları ve tam döviz adları
+• Favoriler sistemi: Önemli dövizleri yıldızla işaretle
+• Gerçek zamanlı hesaplama ile istediğin tutarı çevir
+• Kopyala: Çevrilen tutarları tek dokunuşta kopyala
+• Trend göstergesi: Kurların yükselip yükselmediğini tek bakışta gör
+• Çevrimdışı mod: Son yüklenen kurlar kullanılabilir kalır
+
+🪙 ALTIN & GÜMÜŞ FİYAT HESAPLAYICI
+• USD, EUR, TRY, GBP, CHF, JPY ve daha fazlasında güncel altın ve gümüş fiyatları
+• Altın (1g, 1kg, 1 ons) ve Türk altın sikkeleri
+• Gümüş (1g, 1kg) – değerli metal karşılaştırması için ideal
+• Akıllı alışveriş sepeti: Hesaplamalarını topla ve hesapla
+• Kalıcı sepet: Seçimin uygulama yeniden başlatılsa bile korunur
+• Geri al: Yanlışlıkla silinen öğeleri geri yükle
+• Ayarlanabilir satıcı marjı: Gerçekçi satın alma fiyatları için %1–5
+• Entegre zekât hesabı (toplam değerin %2,5'i)
+• Paylaşma özelliği: Sepet sonuçlarını doğrudan paylaş
+
+🌍 ÇOK DİLLİ
+• Almanca, İngilizce, Türkçe, Fransızca ve İspanyolca olarak tam destek
+• Dil ayarlardan istediğin zaman değiştirilebilir
+
+🌙 MODERN KULLANICI ARAYÜZÜ
+• Karanlık Mod & Açık Mod (sistem ayarına göre otomatik veya manuel)
+• Sezgisel kullanım için Material Design 3
+• Manuel güncelleme için aşağı çekerek yenile
+• Ayarlanabilir titreşim geri bildirimi (kapalı / hafif / tam)
+• Tüm ekran boyutları için duyarlı tasarım
+
+🔒 GİZLİLİK & GÜVENLİK
+• %100 GDPR uyumlu: Tüm veriler yalnızca cihazında saklanır
+• Bulut yok, kayıt yok, kişisel veri yok
+• Sunuculara şifreli HTTPS bağlantıları
+• Reklam yok, takip yok
+
+📡 VERİ KAYNAKLARI
+• Dövizler: Avrupa Merkez Bankası (AMB) – Frankfurter API
+• Altın & Gümüş: Akıllı 24 saatlik önbellek ile GoldAPI.io
+• Güncellemeler: Hafta içi 15:00–16:00 CET (AMB yayını)
+
+
+🎯 KİMLER İÇİN MÜKEMMEL
+
+• Gezginler: Tatilde fiyatları hızlıca çevir
+• Forex meraklıları: Kur gelişimini takip et
+• Altın & Gümüş yatırımcıları: Fiyatları karşılaştır ve hesapla
+• Müslümanlar: Değerli metaller üzerindeki zekâtı kolayca hesapla
+• Gurbetçiler & uluslararası aileler: Ev ve hedef dövizini favorile
+• İş insanları: Profesyonel döviz çevirimi
+• Tasarruf sahipleri: Değerli metalleri yatırım aracı olarak hesapla
+
+
+🚀 PLANLANAN ÖZELLİKLER
+
+• Altın fiyat grafiği ile tarihsel fiyat gelişimi
+• Sepet hesaplamaları için dışa aktarma
+• Platin & Paladyum
+• Önemli kur değişikliklerinde anlık bildirimler
+• Ana ekran widget'ı
+
+
+💡 NEDEN KARATEXCHANGE?
+
+Diğer uygulamalar reklam dolu veya pahalı abonelik gerektirirken, KaratExchange temiz ve odaklanmış bir çözüm sunar. Asıl önemli olana odaklanıyoruz: kesin veriler, hızlı kullanım ve tam gizlilik.
+
+Uygulama, farklı dövizlerle çalışan ve altın fiyatlarını takip eden geliştiriciler tarafından yapıldı. Her özellik gerçek ihtiyaçtan doğdu – ve ücretsiz sunuluyor.
+
+
+📞 DESTEK & GERİ BİLDİRİM
+
+Sorularınız, istekleriniz veya geri bildiriminiz mi var?
+E-posta: dartlogic.dev@gmail.com
+GitHub: github.com/dartlogicdev/currency-gold-application
+
+Ücretsiz indir ve finanslarını kontrol altında tut! 💰
