@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'currency_tab.dart';
 import 'gold_tab.dart';
+import 'gold_scanner_tab.dart';
 // import 'chart_tab.dart'; // TODO: Aktivieren wenn Charts produktionsreif
 // import 'affiliate_tab.dart'; // TODO: Aktivieren für V2 mit Affiliate
 import 'debug_mode_check.dart';
@@ -174,7 +175,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   List<String> get _tabNames {
     final l = LanguageService();
     final showDebug = Config.isDevelopment;
-    final names = [l.t('tab_currency'), l.t('tab_gold'), l.t('tab_settings')];
+    final names = [l.t('tab_currency'), l.t('tab_gold'), l.t('tab_scanner'), l.t('tab_settings')];
     if (showDebug) names.add(l.t('tab_debug'));
     return names;
   }
@@ -187,7 +188,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     final showDebug = Config.isDevelopment;
     // final showChartTab = false; // TODO: Aktivieren wenn Charts produktionsreif
     
-    int tabCount = 3; // Currency + Gold + Settings
+    int tabCount = 4; // Currency + Gold + Scanner + Settings
     // if (showChartTab) tabCount++;
     if (showDebug) tabCount++;
     
@@ -226,6 +227,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           tabs: [
             Tab(text: LanguageService().t('tab_currency')),
             Tab(text: LanguageService().t('tab_gold')),
+            Tab(icon: const Icon(Icons.camera_enhance), text: LanguageService().t('tab_scanner')),
             Tab(icon: const Icon(Icons.settings), text: LanguageService().t('tab_settings')),
             if (showDebug) Tab(text: LanguageService().t('tab_debug')),
           ],
@@ -236,6 +238,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         children: [
           CurrencyTab(langCode: widget.langCode),
           GoldTab(langCode: widget.langCode, zakatEnabled: widget.zakatEnabled, dealerMarkup: widget.dealerMarkup, dealerMarkupEnabled: widget.dealerMarkupEnabled),
+          const GoldScannerTab(),
           SettingsTab(
             currentTheme: widget.currentTheme,
             onThemeChanged: widget.onThemeChanged,

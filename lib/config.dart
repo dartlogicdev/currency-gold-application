@@ -33,6 +33,12 @@ class Config {
   // Timeout-Einstellungen
   static const Duration requestTimeout = Duration(seconds: 10);
 
+  // Gemini Vision API (Gold Scanner Feature)
+  static const String geminiApiKey = String.fromEnvironment(
+    'GEMINI_API_KEY',
+    defaultValue: '',
+  );
+
   // Rechtliches
   static const String privacyPolicyUrl =
       'https://dartlogicdev.github.io/currency-gold-application/privacy_policy.html';
@@ -45,5 +51,8 @@ class Config {
 //
 // Production Mode:
 //   flutter run --dart-define=DEVELOPMENT=false
-//   flutter build apk --dart-define=DEVELOPMENT=false
+//
+// Mit Gemini API Key:
+//   flutter run --dart-define=GEMINI_API_KEY=dein_key_hier
+//   flutter build appbundle --dart-define=GEMINI_API_KEY=dein_key_hier --dart-define=DEVELOPMENT=false
 
