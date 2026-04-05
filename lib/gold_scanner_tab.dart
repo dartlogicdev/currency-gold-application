@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart';
 import 'language_service.dart';
@@ -107,8 +107,17 @@ class _GoldScannerTabState extends State<GoldScannerTab> {
     await _analyzeImage(_selectedImage!);
   }
 
+  String _mimeType(File file) {
+    final ext = file.path.toLowerCase();
+    if (ext.endsWith('.png')) return 'image/png';
+    if (ext.endsWith('.webp')) return 'image/webp';
+    if (ext.endsWith('.gif')) return 'image/gif';
+    return 'image/jpeg';
+  }
+
   Future<void> _analyzeImage(File imageFile) async {
     final apiKey = Config.geminiApiKey;
+    debugPrint('[Scanner] API Key vorhanden: ${apiKey.isNotEmpty}');
     if (apiKey.isEmpty) {
       setState(() {
         _errorMessage = 'API Key nicht konfiguriert. Bitte --dart-define=GEMINI_API_KEY=... verwenden.';
@@ -122,13 +131,14 @@ class _GoldScannerTabState extends State<GoldScannerTab> {
     });
 
     try {
-      final model = GenerativeModel(
-        model: 'gemini-1.5-flash',
-        apiKey: apiKey,
-      );
+      final mime = _mimeType(imageFile);
+      debugPrint('[Scanner] Bildpfad: ${imageFile.path}, MIME: $mime');
 
       final imageBytes = await imageFile.readAsBytes();
-      final prompt = '''
+      final imageBase64 = base64Encode(imageBytes);
+      debugPrint('[Scanner] Bildgröße: ${imageBytes.length} bytes, sende an Gemini v1...');
+
+      const prompt = '''
 Analyze this image and determine if it shows a gold item (coin, bar, jewelry, etc.).
 
 Respond ONLY with a valid JSON object in this exact format (no markdown, no extra text):
@@ -144,14 +154,55 @@ Respond ONLY with a valid JSON object in this exact format (no markdown, no extr
 If it is NOT a gold item, set isGold to false and leave other fields as null.
 ''';
 
-      final response = await model.generateContent([
-        Content.multi([
-          TextPart(prompt),
-          DataPart('image/jpeg', imageBytes),
-        ]),
-      ]);
+      final url = Uri.parse(
+        'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey',
+      );
 
-      final text = response.text ?? '';
+      final requestBody = jsonEncode({
+        'contents': [
+          {
+            'parts': [
+              {'text': prompt},
+              {
+                'inline_data': {
+                  'mime_type': mime,
+                  'data': imageBase64,
+                }
+              },
+            ],
+          }
+        ],
+        'generationConfig': {
+          'temperature': 0.1,
+          'maxOutputTokens': 8192,
+          'responseMimeType': 'application/json',
+        },
+      });
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: requestBody,
+      );
+
+      debugPrint('[Scanner] HTTP Status: ${response.statusCode}');
+
+      if (response.statusCode != 200) {
+        throw Exception('Gemini API Fehler ${response.statusCode}: ${response.body}');
+      }
+
+      final responseJson = jsonDecode(response.body) as Map<String, dynamic>;
+      final candidates = responseJson['candidates'] as List<dynamic>?;
+      final parts = candidates?.first?['content']?['parts'] as List<dynamic>?;
+
+      // gemini-2.5-flash (thinking model): skip thought parts, join all text parts
+      final textParts = parts
+          ?.where((p) => p['thought'] != true && p['text'] != null)
+          .map((p) => p['text'] as String)
+          .toList();
+      final text = textParts?.join('') ?? '';
+      debugPrint('[Scanner] Gemini Antwort erhalten (${text.length} chars)');
+
       final parsed = _parseResponse(text, _goldPricePerGram);
 
       await _incrementScanCount();
@@ -160,7 +211,9 @@ If it is NOT a gold item, set isGold to false and leave other fields as null.
         _result = parsed;
         _isAnalyzing = false;
       });
-    } catch (e) {
+    } catch (e, stack) {
+      debugPrint('[Scanner] Fehler: $e');
+      debugPrint('[Scanner] Stack: $stack');
       setState(() {
         _errorMessage = '${LanguageService().t('scanner_error')}: $e';
         _isAnalyzing = false;
@@ -170,14 +223,24 @@ If it is NOT a gold item, set isGold to false and leave other fields as null.
 
   ScanResult _parseResponse(String text, double goldPricePerGram) {
     try {
+      // Markdown code fences entfernen (safety fallback)
+      String cleaned = text
+          .replaceAll(RegExp(r'```json\s*', caseSensitive: false), '')
+          .replaceAll(RegExp(r'```\s*'), '')
+          .trim();
+
       // JSON aus der Antwort extrahieren
-      final jsonStart = text.indexOf('{');
-      final jsonEnd = text.lastIndexOf('}');
-      if (jsonStart == -1 || jsonEnd == -1) throw Exception('No JSON found');
-      final jsonStr = text.substring(jsonStart, jsonEnd + 1);
+      final jsonStart = cleaned.indexOf('{');
+      final jsonEnd = cleaned.lastIndexOf('}');
+      if (jsonStart == -1 || jsonEnd == -1) {
+        debugPrint('[Scanner] Parse-Fehler: kein vollständiges JSON in Antwort');
+        throw Exception('No JSON found');
+      }
+      final jsonStr = cleaned.substring(jsonStart, jsonEnd + 1);
       final Map<String, dynamic> data = json.decode(jsonStr);
       return ScanResult.fromJson(data, goldPricePerGram);
-    } catch (_) {
+    } catch (e) {
+      debugPrint('[Scanner] _parseResponse Fehler: $e');
       return ScanResult.unknown();
     }
   }
@@ -498,7 +561,9 @@ class ScanResult {
   });
 
   factory ScanResult.fromJson(Map<String, dynamic> json, double goldPricePerGram) {
-    final isGold = json['isGold'] == true;
+    final isGoldValue = json['isGold'];
+    // Handle both boolean true and string "true" from LLM responses
+    final isGold = isGoldValue == true || isGoldValue == 'true';
     final weight = (json['weightGrams'] as num?)?.toDouble();
     final purity = (json['purityPercent'] as num?)?.toDouble();
 
