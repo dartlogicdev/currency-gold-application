@@ -181,7 +181,7 @@ class _ChartTabState extends State<ChartTab> {
           // Warnung wenn weniger Daten als angefordert
           if (data.length < days) {
             errorMessage =
-                'Hinweis: Nur ${data.length} Tage verfügbar (${days} angefordert)';
+                'Hinweis: Nur ${data.length} Tage verfügbar ($days angefordert)';
           }
         });
       } else {
