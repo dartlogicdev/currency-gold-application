@@ -163,6 +163,8 @@ class LanguageService {
     'Unze (1 oz)':{'de': 'Unze (1 oz)', 'en': 'Ounce (1 oz)', 'tr': 'Ons (1 oz)',  'fr': 'Once (1 oz)', 'es': 'Onza (1 oz)'},
     'Silber (1g)':{'de': 'Silber (1g)', 'en': 'Silver (1g)',  'tr': 'Gümüş (1g)',  'fr': 'Argent (1g)', 'es': 'Plata (1g)'},
     'Silber (1kg)':{'de':'Silber (1kg)','en': 'Silver (1kg)', 'tr': 'Gümüş (1kg)', 'fr': 'Argent (1kg)','es': 'Plata (1kg)'},
+    'Altın Takı': {'de': 'Gold-Schmuck', 'en': 'Gold Jewelry', 'tr': 'Altın Takı',  'fr': 'Bijou or',    'es': 'Joya de oro'},
+    'Gümüş Takı': {'de': 'Silber-Schmuck','en': 'Silver Jewelry','tr': 'Gümüş Takı','fr': 'Bijou argent','es': 'Joya de plata'},
   };
 
   static const Map<String, Map<String, String>> _translations = {

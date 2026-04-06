@@ -55,6 +55,14 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   int bilezikKarat = 22;
   final TextEditingController bilezikWeightController = TextEditingController(text: '1');
 
+  // Altın Takı-spezifisch
+  int takiKarat = 18;
+  final TextEditingController takiWeightController = TextEditingController(text: '1');
+
+  // Gümüş Takı-spezifisch
+  int gumustakiFeinheit = 925;
+  final TextEditingController gumustakiWeightController = TextEditingController(text: '1');
+
   List<GoldItem> cart = [];
 
   // Undo Snapshot (kompletter Zustand)
@@ -73,6 +81,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   void dispose() {
     _currentToast?.remove();
     bilezikWeightController.dispose();
+    takiWeightController.dispose();
+    gumustakiWeightController.dispose();
     super.dispose();
   }
 
@@ -231,6 +241,15 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   bool _isBilezikCoin(String coin) =>
       coin == 'Altın Bilezik' || coin == '22 Ayar Bilezik';
 
+  bool get _isAltinTakiSelected => selectedCoin == 'Altın Takı';
+  bool _isAltinTakiCoin(String coin) => coin == 'Altın Takı';
+
+  bool get _isGumusTakiSelected => selectedCoin == 'Gümüş Takı';
+  bool _isGumusTakiCoin(String coin) => coin == 'Gümüş Takı';
+
+  bool _isCustomJewelryCoin(String coin) =>
+      _isBilezikCoin(coin) || _isAltinTakiCoin(coin) || _isGumusTakiCoin(coin);
+
   // Berechnet spotPerPiece und grams für normale Münzen und Bilezik-Einträge
   Map<String, double> _resolveCartItem(GoldItem item) {
     if (item.coinName.startsWith('Bilezik|')) {
@@ -240,6 +259,22 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       final data = (coins['Gold (1g)']?[selectedCurrency] ?? {}) as Map;
       final goldSpot = ((data['spot'] ?? 0.0) as num).toDouble();
       return {'spotPerPiece': goldSpot * (karat / 24) * weight, 'grams': weight};
+    }
+    if (item.coinName.startsWith('GoldTaki|')) {
+      final parts = item.coinName.split('|');
+      final karat = int.tryParse(parts.length > 1 ? parts[1] : '18') ?? 18;
+      final weight = double.tryParse(parts.length > 2 ? parts[2] : '1') ?? 1.0;
+      final data = (coins['Gold (1g)']?[selectedCurrency] ?? {}) as Map;
+      final goldSpot = ((data['spot'] ?? 0.0) as num).toDouble();
+      return {'spotPerPiece': goldSpot * (karat / 24) * weight, 'grams': weight};
+    }
+    if (item.coinName.startsWith('SilverTaki|')) {
+      final parts = item.coinName.split('|');
+      final feinheit = int.tryParse(parts.length > 1 ? parts[1] : '925') ?? 925;
+      final weight = double.tryParse(parts.length > 2 ? parts[2] : '1') ?? 1.0;
+      final data = (coins['Silber (1g)']?[selectedCurrency] ?? {}) as Map;
+      final silverSpot = ((data['spot'] ?? 0.0) as num).toDouble();
+      return {'spotPerPiece': silverSpot * (feinheit / 1000) * weight, 'grams': weight};
     }
     final coinData = coins[item.coinName];
     final w = ((coinData?['weight'] ?? 1.0) as num).toDouble();
@@ -254,6 +289,18 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       final karat = parts.length > 1 ? parts[1] : '22';
       final weight = parts.length > 2 ? parts[2] : '1';
       return 'Bilezik (${karat}K, ${weight}g)';
+    }
+    if (item.coinName.startsWith('GoldTaki|')) {
+      final parts = item.coinName.split('|');
+      final karat = parts.length > 1 ? parts[1] : '18';
+      final weight = parts.length > 2 ? parts[2] : '1';
+      return 'Altın Takı (${karat}K, ${weight}g)';
+    }
+    if (item.coinName.startsWith('SilverTaki|')) {
+      final parts = item.coinName.split('|');
+      final feinheit = parts.length > 1 ? parts[1] : '925';
+      final weight = parts.length > 2 ? parts[2] : '1';
+      return 'Gümüş Takı ($feinheit‰, ${weight}g)';
     }
     return LanguageService().translateCoin(item.coinName);
   }
@@ -277,6 +324,44 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       quantityController.text = '1';
       HapticService().medium();
       _showToast('Bilezik (${bilezikKarat}K, ${w}g) ${LanguageService().t('gold_added_to_cart')}');
+      return;
+    }
+
+    if (_isAltinTakiSelected) {
+      final w = double.tryParse(takiWeightController.text) ?? 1.0;
+      final encodedName = 'GoldTaki|$takiKarat|$w';
+      setState(() {
+        final existing = cart.where((e) => e.coinName == encodedName).toList();
+        if (existing.isNotEmpty) {
+          existing.first.quantity += qty;
+        } else {
+          cart.add(GoldItem(coinName: encodedName, quantity: qty));
+        }
+      });
+      AnalyticsService().trackCartItemAdded(qty * w, selectedCurrency);
+      saveCart();
+      quantityController.text = '1';
+      HapticService().medium();
+      _showToast('Altın Takı (${takiKarat}K, ${w}g) ${LanguageService().t('gold_added_to_cart')}');
+      return;
+    }
+
+    if (_isGumusTakiSelected) {
+      final w = double.tryParse(gumustakiWeightController.text) ?? 1.0;
+      final encodedName = 'SilverTaki|$gumustakiFeinheit|$w';
+      setState(() {
+        final existing = cart.where((e) => e.coinName == encodedName).toList();
+        if (existing.isNotEmpty) {
+          existing.first.quantity += qty;
+        } else {
+          cart.add(GoldItem(coinName: encodedName, quantity: qty));
+        }
+      });
+      AnalyticsService().trackCartItemAdded(qty * w, selectedCurrency);
+      saveCart();
+      quantityController.text = '1';
+      HapticService().medium();
+      _showToast('Gümüş Takı ($gumustakiFeinheit‰, ${w}g) ${LanguageService().t('gold_added_to_cart')}');
       return;
     }
 
@@ -641,10 +726,13 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             selectedItemBuilder: (context) => coins.keys.map((coin) {
               final w = ((coins[coin]['weight']) as num).toDouble();
               final k = coins[coin]['karat'];
-              final isBilezik = _isBilezikCoin(coin);
+              final isCustom = _isCustomJewelryCoin(coin);
+              final isGumusTaki = _isGumusTakiCoin(coin);
               return Text(
-                isBilezik
-                    ? '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ Karat'
+                isCustom
+                    ? isGumusTaki
+                        ? '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ Feinheit'
+                        : '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ Karat'
                     : '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g ${k}K',
                 style: const TextStyle(fontWeight: FontWeight.w600),
                 overflow: TextOverflow.ellipsis,
@@ -663,7 +751,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                       : k >= 18
                           ? Colors.orange.shade400
                           : Colors.grey.shade500;
-              final badgeColor = isBilezik ? Colors.teal.shade400 : karatColor;
+              final badgeColor = isCustom
+                  ? (isGumusTaki ? Colors.blue.shade400 : Colors.teal.shade400)
+                  : karatColor;
               return DropdownMenuItem(
                 value: coin,
                 child: Padding(
@@ -679,7 +769,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                           border: Border.all(color: badgeColor.withValues(alpha: 0.4)),
                         ),
                         child: Center(
-                          child: isBilezik
+                          child: isCustom
                               ? Icon(Icons.edit, size: 16, color: badgeColor)
                               : Text(
                                   '${k}K',
@@ -773,9 +863,121 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             ),
           ],
 
-          const SizedBox(height: 16),
+          // --- Altın Takı: Karat + Gewicht ---
+          if (_isAltinTakiSelected) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.amber.shade300),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Karat', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  const SizedBox(height: 6),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [8, 14, 18, 21, 22, 24].map((k) {
+                        final isSel = k == takiKarat;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text('${k}K',
+                                style: TextStyle(
+                                    fontWeight: isSel ? FontWeight.bold : FontWeight.normal)),
+                            selected: isSel,
+                            onSelected: (_) => setState(() => takiKarat = k),
+                            selectedColor: Colors.amber.shade600,
+                            labelStyle: TextStyle(color: isSel ? Colors.white : null),
+                            side: BorderSide(
+                                color: isSel ? Colors.amber.shade600 : Colors.grey.shade300),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 150,
+                    child: TextField(
+                      controller: takiWeightController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Gewicht pro Stück',
+                        suffixText: 'g',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
 
-          // --- Währungs-Chips: horizontal scrollbar ---
+          // --- Gümüş Takı: Feinheit + Gewicht ---
+          if (_isGumusTakiSelected) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.blue.withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.blue.shade300),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Feinheit', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  const SizedBox(height: 6),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [800, 925, 999].map((f) {
+                        final isSel = f == gumustakiFeinheit;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text('$f‰',
+                                style: TextStyle(
+                                    fontWeight: isSel ? FontWeight.bold : FontWeight.normal)),
+                            selected: isSel,
+                            onSelected: (_) => setState(() => gumustakiFeinheit = f),
+                            selectedColor: Colors.blue.shade600,
+                            labelStyle: TextStyle(color: isSel ? Colors.white : null),
+                            side: BorderSide(
+                                color: isSel ? Colors.blue.shade600 : Colors.grey.shade300),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 150,
+                    child: TextField(
+                      controller: gumustakiWeightController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: const InputDecoration(
+                        labelText: 'Gewicht pro Stück',
+                        suffixText: 'g',
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+
+          const SizedBox(height: 16),: horizontal scrollbar ---
           Align(
             alignment: Alignment.centerLeft,
             child: Text(

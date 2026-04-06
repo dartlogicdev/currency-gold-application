@@ -201,6 +201,7 @@ app.get('/gold', async (req, res) => {
     'Reşat Altın': { weight: 7.21, karat: 22 },
     'Gremse Altın': { weight: 17.5, karat: 22 },
     'Altın Bilezik': { weight: 1, karat: 22 },
+    'Altın Takı': { weight: 1, karat: 22 },
   };
 
   // Prüfe Cache zuerst
@@ -288,6 +289,7 @@ app.get('/gold', async (req, res) => {
       const silverItems = {
         'Silber (1g)': { weight: 1, karat: 24 },
         'Silber (1kg)': { weight: 1000, karat: 24 },
+        'Gümüş Takı': { weight: 1, karat: 24 },
       };
       for (const [name, data] of Object.entries(silverItems)) {
         const silverEntry = { weight: data.weight, karat: data.karat, metal: 'silver' };
