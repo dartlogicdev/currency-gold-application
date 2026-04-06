@@ -104,7 +104,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
         final data = jsonDecode(cachedData);
         setState(() {
           coins = Map<String, dynamic>.from(data['coins']);
-          if (coins.isNotEmpty) {
+          if (selectedCoin.isEmpty || !coins.containsKey(selectedCoin)) {
             selectedCoin = coins.keys.first;
           }
           lastFetchTime = cachedTime;
@@ -142,8 +142,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       
       setState(() {
         coins = Map<String, dynamic>.from(data['coins']);
-        selectedCoin = coins.keys.first;
-        
+          if (selectedCoin.isEmpty || !coins.containsKey(selectedCoin)) {
+            selectedCoin = coins.keys.first;
+          }
         // Cache-Metadaten extrahieren
         isCached = data['cached'] as bool?;
         cacheAge = data['cacheAge'] as int?;
@@ -731,7 +732,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               return Text(
                 isCustom
                     ? isGumusTaki
-                        ? '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ Feinheit'
+                        ? '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ ${l.t('gold_fineness')}'
                         : '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ Karat'
                     : '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g ${k}K',
                 style: const TextStyle(fontWeight: FontWeight.w600),
@@ -744,6 +745,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               final data = coins[coin][selectedCurrency] ?? {};
               final spot = ((data['spot'] ?? 0.0) as num).toDouble();
               final isBilezik = _isBilezikCoin(coin);
+              final isCustom = _isCustomJewelryCoin(coin);
+              final isGumusTaki = _isGumusTakiCoin(coin);
               final karatColor = k >= 24
                   ? Colors.amber.shade700
                   : k >= 22
@@ -933,12 +936,12 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Feinheit', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text(l.t('gold_fineness'), style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                   const SizedBox(height: 6),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: [800, 925, 999].map((f) {
+                      children: [800, 830, 875, 925, 950, 999].map((f) {
                         final isSel = f == gumustakiFeinheit;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
@@ -977,7 +980,9 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             ),
           ],
 
-          const SizedBox(height: 16),: horizontal scrollbar ---
+          const SizedBox(height: 16),
+
+          // --- Währungs-Chips: horizontal scrollbar ---
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
