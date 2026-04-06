@@ -1,7 +1,7 @@
 # Datenschutzerklärung / Privacy Policy
 
 **KaratExchange - Gold & Währungen**  
-**Zuletzt aktualisiert:** 20. März 2026
+**Zuletzt aktualisiert:** 6. April 2026
 
 ## 1. Einleitung
 
@@ -47,7 +47,20 @@ Die App ruft aktuelle Wechselkurse und Goldpreise von folgenden Quellen ab:
 - **Übertragene Daten:** Keine persönlichen Daten
 - **Zweck:** Anzeige aktueller Gold- und Silberpreise
 
-### 2.3 Keine Nutzerkonten
+### 2.3 Google AdMob (Werbung)
+
+Die App verwendet **Google AdMob** zur Anzeige von Werbebannern. Dabei können folgende Daten von Google erhoben werden:
+
+- **Werbe-ID (Advertising ID):** Gerätespezifische Kennung für personalisierte Werbung
+- **IP-Adresse:** Zur Standortbestimmung auf Länderebene
+- **Interaktionsdaten:** Klicks und Impressionen auf Werbeanzeigen
+- **Geräteinformationen:** Hersteller, Modell, Betriebssystem-Version
+
+**Verantwortlich für diese Datenerhebung:** Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA  
+**Datenschutzerklärung Google:** https://policies.google.com/privacy  
+**Opt-out:** Android-Einstellungen → Google → Werbung → Anzeigen-ID zurücksetzen / Personalisierung deaktivieren
+
+### 2.4 Keine Nutzerkonten
 
 Die App erfordert **keine Registrierung** und speichert **keine persönlichen Identifikationsdaten** wie Namen, E-Mail-Adressen oder Telefonnummern.
 
@@ -65,9 +78,10 @@ Die App erfordert **keine Registrierung** und speichert **keine persönlichen Id
 
 ## 4. Datenweitergabe an Dritte
 
-Wir geben **keine Daten** an Dritte weiter. Die App nutzt:
+Die App gibt Daten ausschließlich im folgenden Rahmen weiter:
 
-- **Keine Werbenetzwerke** (kein Google AdMob, Facebook Ads, etc.)
+- **Google AdMob:** Zur Anzeige von Werbebannern werden Gerätedaten (Werbe-ID, IP-Adresse) an Google LLC übertragen. Weitere Informationen: https://policies.google.com/privacy
+- **Keine sonstigen Werbenetzwerke** (kein Facebook Ads, etc.)
 - **Keine Analytics-Dienste** (kein Google Analytics, Firebase Analytics, etc.)
 - **Keine Social-Media-Integration**
 - **Keine Cloud-Speicherung** persönlicher Daten
@@ -95,8 +109,9 @@ Wir setzen angemessene technische und organisatorische Maßnahmen ein:
 
 Die App benötigt folgende Android-Berechtigungen:
 
-- **INTERNET:** Zum Abrufen von Wechselkursen und Goldpreisen
+- **INTERNET:** Zum Abrufen von Wechselkursen, Goldpreisen und Werbeanzeigen (AdMob)
 - **ACCESS_NETWORK_STATE:** Zur Erkennung der Netzwerkverbindung (Offline-Hinweise)
+- **VIBRATE:** Für haptisches Feedback bei Benutzeraktionen
 
 **Keine weiteren Berechtigungen** werden angefordert (kein Standort, keine Kamera, keine Kontakte, etc.).
 
@@ -120,7 +135,7 @@ Die App richtet sich an Nutzer ab 16 Jahren. Wir erfassen wissentlich keine Date
 
 Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf zu aktualisieren. Wesentliche Änderungen werden in der App kommuniziert.
 
-**Letzte Änderung:** 20. März 2026
+**Letzte Änderung:** 6. April 2026
 
 ## 11. Kontakt
 
@@ -143,7 +158,8 @@ Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 - No tracking, no personal data transmission
 
 **Third Parties:**
-- No advertising networks
+- **Google AdMob:** Banner ads are displayed via Google AdMob. Google may collect device advertising ID and IP address. See https://policies.google.com/privacy
+- No other advertising networks
 - No analytics services
 - No social media integration
 - No cloud storage of personal data
@@ -152,4 +168,4 @@ Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 - Delete all data by clearing app data in Android settings
 - Contact us for questions: dartlogic.dev@gmail.com
 
-**Last Updated:** March 20, 2026
+**Last Updated:** April 6, 2026
