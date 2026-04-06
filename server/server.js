@@ -193,14 +193,14 @@ app.get('/gold', async (req, res) => {
     'Gold (1g)': { weight: 1, karat: 24 },
     'Gold (1kg)': { weight: 1000, karat: 24 },
     'Unze (1 oz)': { weight: 31.1035, karat: 24 },
-    'Cumhuriyet Altını': { weight: 7.21, karat: 22 },
-    'Ata Altını': { weight: 7.21, karat: 22 },
+    'Cumhuriyet Altın': { weight: 7.21, karat: 22 },
+    'Ata Altın': { weight: 7.21, karat: 22 },
     'Çeyrek Altın': { weight: 1.75, karat: 22 },
-    'Yarim Altın': { weight: 3.5, karat: 22 },
+    'Yarım Altın': { weight: 3.5, karat: 22 },
     'Tam Altın (Ziynet)': { weight: 7.01, karat: 22 },
-    'Reşat Altını': { weight: 7.21, karat: 22 },
-    'Gremse Altını': { weight: 17.5, karat: 22 },
-    '22 Ayar Bilezik': { weight: 1, karat: 22 },
+    'Reşat Altın': { weight: 7.21, karat: 22 },
+    'Gremse Altın': { weight: 17.5, karat: 22 },
+    'Altın Bilezik': { weight: 1, karat: 22 },
   };
 
   // Prüfe Cache zuerst

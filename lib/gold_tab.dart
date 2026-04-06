@@ -51,6 +51,10 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     text: '1',
   );
 
+  // Bilezik-spezifisch
+  int bilezikKarat = 22;
+  final TextEditingController bilezikWeightController = TextEditingController(text: '1');
+
   List<GoldItem> cart = [];
 
   // Undo Snapshot (kompletter Zustand)
@@ -68,6 +72,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
   @override
   void dispose() {
     _currentToast?.remove();
+    bilezikWeightController.dispose();
     super.dispose();
   }
 
@@ -220,8 +225,60 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
 
   /* ------------------ Logik ------------------ */
 
+  bool get _isBilezikSelected =>
+      selectedCoin == 'Altın Bilezik' || selectedCoin == '22 Ayar Bilezik';
+
+  bool _isBilezikCoin(String coin) =>
+      coin == 'Altın Bilezik' || coin == '22 Ayar Bilezik';
+
+  // Berechnet spotPerPiece und grams für normale Münzen und Bilezik-Einträge
+  Map<String, double> _resolveCartItem(GoldItem item) {
+    if (item.coinName.startsWith('Bilezik|')) {
+      final parts = item.coinName.split('|');
+      final karat = int.tryParse(parts.length > 1 ? parts[1] : '22') ?? 22;
+      final weight = double.tryParse(parts.length > 2 ? parts[2] : '1') ?? 1.0;
+      final data = (coins['Gold (1g)']?[selectedCurrency] ?? {}) as Map;
+      final goldSpot = ((data['spot'] ?? 0.0) as num).toDouble();
+      return {'spotPerPiece': goldSpot * (karat / 24) * weight, 'grams': weight};
+    }
+    final coinData = coins[item.coinName];
+    final w = ((coinData?['weight'] ?? 1.0) as num).toDouble();
+    final data = (coinData?[selectedCurrency] ?? {}) as Map;
+    final spot = ((data['spot'] ?? 0.0) as num).toDouble();
+    return {'spotPerPiece': spot, 'grams': w};
+  }
+
+  String _displayCoinName(GoldItem item) {
+    if (item.coinName.startsWith('Bilezik|')) {
+      final parts = item.coinName.split('|');
+      final karat = parts.length > 1 ? parts[1] : '22';
+      final weight = parts.length > 2 ? parts[2] : '1';
+      return 'Bilezik (${karat}K, ${weight}g)';
+    }
+    return LanguageService().translateCoin(item.coinName);
+  }
+
   void addToCart() {
     final qty = double.tryParse(quantityController.text) ?? 1.0;
+
+    if (_isBilezikSelected) {
+      final w = double.tryParse(bilezikWeightController.text) ?? 1.0;
+      final encodedName = 'Bilezik|$bilezikKarat|$w';
+      setState(() {
+        final existing = cart.where((e) => e.coinName == encodedName).toList();
+        if (existing.isNotEmpty) {
+          existing.first.quantity += qty;
+        } else {
+          cart.add(GoldItem(coinName: encodedName, quantity: qty));
+        }
+      });
+      AnalyticsService().trackCartItemAdded(qty * w, selectedCurrency);
+      saveCart();
+      quantityController.text = '1';
+      HapticService().medium();
+      _showToast('Bilezik (${bilezikKarat}K, ${w}g) ${LanguageService().t('gold_added_to_cart')}');
+      return;
+    }
 
     setState(() {
       final existing = cart.where((e) => e.coinName == selectedCoin).toList();
@@ -319,13 +376,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     double totalDealer = 0;
 
     for (var item in cart) {
-      final coinData = coins[item.coinName];
-      final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
-      final data = coinData?[selectedCurrency] ?? {};
-      final spot = ((data['spot'] ?? 0.0) as num).toDouble();
-
-      final grams = item.quantity * weight;
-      final spotTotal = (spot / weight) * grams;
+      final resolved = _resolveCartItem(item);
+      final spotTotal = resolved['spotPerPiece']! * item.quantity;
       final dealerTotal = spotTotal * 1.04;
 
       totalSpot += spotTotal;
@@ -335,7 +387,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           ? item.quantity.toInt().toString() 
           : item.quantity.toStringAsFixed(2);
 
-      buffer.writeln('• ${item.coinName}: ${quantityStr}x');
+      buffer.writeln('• ${_displayCoinName(item)}: ${quantityStr}x');
       buffer.writeln("  ${LanguageService().t('gold_spot')}: ${LanguageService().formatAmount(spotTotal)} $selectedCurrency");
       buffer.writeln("  ${LanguageService().t('gold_dealer')}: ${LanguageService().formatAmount(dealerTotal)} $selectedCurrency\n");
     }
@@ -363,12 +415,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     final List<Map<String, dynamic>> zakatItems = [];
 
     for (final item in cart) {
-      final coinData = coins[item.coinName];
-      final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
-      final data = coinData?[selectedCurrency] ?? {};
-      final spot = ((data['spot'] ?? 0.0) as num).toDouble();
-      final grams = item.quantity * weight;
-      final spotTotal = (spot / weight) * grams;
+      final resolved = _resolveCartItem(item);
+      final spotTotal = resolved['spotPerPiece']! * item.quantity;
       final dealerTotal = spotTotal * (widget.dealerMarkupEnabled ? (1 + widget.dealerMarkup / 100) : 1.0);
       final zakat = dealerTotal / 40;
       totalZakat += zakat;
@@ -412,7 +460,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                 return ListTile(
                   dense: true,
                   contentPadding: EdgeInsets.zero,
-                  title: Text('${qty}× ${LanguageService().translateCoin(item.coinName)}'),
+                  title: Text('${qty}× ${_displayCoinName(item)}'),
                   subtitle: Text(
                     '${l.t('zakat_basis')}: ${l.formatAmount(dealer)} $selectedCurrency',
                     style: const TextStyle(fontSize: 11),
@@ -523,13 +571,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
     double totalDealer = 0;
 
     for (var item in cart) {
-      final coinData = coins[item.coinName];
-      final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
-      final data = coinData?[selectedCurrency] ?? {};
-      final spot = ((data['spot'] ?? 0.0) as num).toDouble();
-
-      final grams = item.quantity * weight;
-      final spotTotal = (spot / weight) * grams;
+      final resolved = _resolveCartItem(item);
+      final spotTotal = resolved['spotPerPiece']! * item.quantity;
       totalSpot += spotTotal;
       totalDealer += spotTotal * (widget.dealerMarkupEnabled ? (1 + widget.dealerMarkup / 100) : 1.0);
     }
@@ -586,43 +629,199 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                     ],
                   ),
                 ),
+          // --- Münz-Dropdown: zweizeilig mit Preis ---
           DropdownButtonFormField<String>(
-            initialValue: selectedCoin,
+            value: selectedCoin.isEmpty ? null : selectedCoin,
+            isExpanded: true,
             decoration: InputDecoration(
               labelText: l.t('gold_coin'),
               border: const OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.monetization_on_outlined, color: Colors.amber),
             ),
-            items: coins.keys.map((coin) {
-              final w = coins[coin]['weight'];
+            selectedItemBuilder: (context) => coins.keys.map((coin) {
+              final w = ((coins[coin]['weight']) as num).toDouble();
               final k = coins[coin]['karat'];
+              final isBilezik = _isBilezikCoin(coin);
+              return Text(
+                isBilezik
+                    ? '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g  ✎ Karat'
+                    : '${l.translateCoin(coin)}  •  ${w.toStringAsFixed(2)}g ${k}K',
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                overflow: TextOverflow.ellipsis,
+              );
+            }).toList(),
+            items: coins.keys.map((coin) {
+              final w = ((coins[coin]['weight']) as num).toDouble();
+              final k = coins[coin]['karat'];
+              final data = coins[coin][selectedCurrency] ?? {};
+              final spot = ((data['spot'] ?? 0.0) as num).toDouble();
+              final isBilezik = _isBilezikCoin(coin);
+              final karatColor = k >= 24
+                  ? Colors.amber.shade700
+                  : k >= 22
+                      ? Colors.amber.shade600
+                      : k >= 18
+                          ? Colors.orange.shade400
+                          : Colors.grey.shade500;
+              final badgeColor = isBilezik ? Colors.teal.shade400 : karatColor;
               return DropdownMenuItem(
                 value: coin,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(l.translateCoin(coin)),
-                    Text(
-                      '${w.toStringAsFixed(2)}g • $k K',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                  ],
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: badgeColor.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: badgeColor.withValues(alpha: 0.4)),
+                        ),
+                        child: Center(
+                          child: isBilezik
+                              ? Icon(Icons.edit, size: 16, color: badgeColor)
+                              : Text(
+                                  '${k}K',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: karatColor,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(l.translateCoin(coin),
+                                style: const TextStyle(fontWeight: FontWeight.w600),
+                                overflow: TextOverflow.ellipsis),
+                            Text(
+                              '${w.toStringAsFixed(2)}g • ${l.formatAmount(spot)} $selectedCurrency',
+                              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }).toList(),
             onChanged: (v) => setState(() => selectedCoin = v!),
           ),
-          const SizedBox(height: 12),
 
-          DropdownButtonFormField<String>(
-            initialValue: selectedCurrency,
-            decoration: InputDecoration(
-              labelText: l.t('gold_currency'),
-              border: const OutlineInputBorder(),
+          // --- Bilezik: Karat + Gewicht ---
+          if (_isBilezikSelected) ...[
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.amber.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.amber.shade300),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Karat', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  const SizedBox(height: 6),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [8, 14, 18, 21, 22].map((k) {
+                        final isSel = k == bilezikKarat;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: ChoiceChip(
+                            label: Text('${k}K',
+                                style: TextStyle(
+                                    fontWeight: isSel ? FontWeight.bold : FontWeight.normal)),
+                            selected: isSel,
+                            onSelected: (_) => setState(() => bilezikKarat = k),
+                            selectedColor: Colors.amber.shade600,
+                            labelStyle: TextStyle(color: isSel ? Colors.white : null),
+                            side: BorderSide(
+                                color: isSel ? Colors.amber.shade600 : Colors.grey.shade300),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: 150,
+                    child: TextField(
+                      controller: bilezikWeightController,
+                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      decoration: InputDecoration(
+                        labelText: 'Gewicht pro Stück',
+                        suffixText: 'g',
+                        border: const OutlineInputBorder(),
+                        isDense: true,
+                        contentPadding:
+                            const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-            items: currencies
-                .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                .toList(),
-            onChanged: (v) => setState(() => selectedCurrency = v!),
+          ],
+
+          const SizedBox(height: 16),
+
+          // --- Währungs-Chips: horizontal scrollbar ---
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              l.t('gold_currency'),
+              style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+            ),
+          ),
+          const SizedBox(height: 6),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: currencies.map((c) {
+                final isSelected = c == selectedCurrency;
+                const currencySymbols = {
+                  'USD': '\$', 'EUR': '€', 'TRY': '₺', 'GBP': '£',
+                  'CHF': '₣', 'JPY': '¥', 'AUD': 'A\$', 'CAD': 'C\$',
+                  'INR': '₹', 'SAR': '﷼', 'AED': 'د.إ',
+                };
+                final symbol = currencySymbols[c] ?? c;
+                return Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(
+                      '$c $symbol',
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontSize: 13,
+                      ),
+                    ),
+                    selected: isSelected,
+                    onSelected: (_) => setState(() => selectedCurrency = c),
+                    selectedColor: Theme.of(context).colorScheme.primary,
+                    labelStyle: TextStyle(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.onPrimary
+                          : null,
+                    ),
+                    side: BorderSide(
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey.shade300,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
           ),
           const SizedBox(height: 12),
 
@@ -660,13 +859,8 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
             itemCount: cart.length,
             itemBuilder: (context, index) {
               final item = cart[index];
-              final coinData = coins[item.coinName];
-              final weight = ((coinData?['weight'] ?? 1.0) as num).toDouble();
-              final data = coinData?[selectedCurrency] ?? {};
-              final spot = ((data['spot'] ?? 0.0) as num).toDouble();
-
-              final grams = item.quantity * weight;
-              final spotTotal = (spot / weight) * grams;
+              final resolved = _resolveCartItem(item);
+              final spotTotal = resolved['spotPerPiece']! * item.quantity;
               final dealerTotal = spotTotal * (widget.dealerMarkupEnabled ? (1 + widget.dealerMarkup / 100) : 1.0);
 
                 return Dismissible(
@@ -681,7 +875,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                   onDismissed: (_) => removeItem(index),
                   child: Card(
                     child: ListTile(
-                      title: Text(l.translateCoin(item.coinName)),
+                      title: Text(_displayCoinName(item)),
                       subtitle: Text('${l.t('gold_quantity')}: ${item.quantity % 1 == 0 ? item.quantity.toInt() : item.quantity}'),
                       trailing: Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
