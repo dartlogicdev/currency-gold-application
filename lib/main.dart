@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'currency_tab.dart';
 import 'gold_tab.dart';
-// import 'chart_tab.dart'; // TODO: Aktivieren wenn Charts produktionsreif
-// import 'affiliate_tab.dart'; // TODO: Aktivieren für V2 mit Affiliate
 import 'debug_mode_check.dart';
 import 'config.dart';
 import 'analytics_service.dart';
@@ -11,6 +10,7 @@ import 'theme_service.dart';
 import 'settings_tab.dart';
 import 'haptic_service.dart';
 import 'language_service.dart';
+import 'ad_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -29,6 +29,9 @@ void main() async {
 
   // Initialisiere LanguageService
   await LanguageService().init();
+
+  // Initialisiere AdMob
+  await initAdMob();
 
   runApp(const MyApp());
 }
@@ -231,9 +234,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ],
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
           CurrencyTab(langCode: widget.langCode),
           GoldTab(langCode: widget.langCode, zakatEnabled: widget.zakatEnabled, dealerMarkup: widget.dealerMarkup, dealerMarkupEnabled: widget.dealerMarkupEnabled),
           SettingsTab(
@@ -249,6 +255,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             onDealerMarkupEnabledChanged: widget.onDealerMarkupEnabledChanged,
           ),
           if (showDebug) const DebugModeCheck(),
+          ],
+        ),
+          ),
+          const BannerAdWidget(),
         ],
       ),
     );
