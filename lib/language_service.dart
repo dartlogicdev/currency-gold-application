@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LanguageService {
@@ -60,6 +61,13 @@ class LanguageService {
     return _currencyNames[code]?[_langCode] ??
         _currencyNames[code]?['en'] ??
         code;
+  }
+
+  /// Formatiert einen Geldbetrag locale-gerecht:
+  /// DE/TR/ES/FR → 10.000,50  |  EN → 10,000.50
+  String formatAmount(double value, {int decimals = 2}) {
+    final pattern = '#,##0.${'0' * decimals}';
+    return NumberFormat(pattern, _langCode).format(value);
   }
 
   // Länderkeywords für die Suche (sprachunabhängig, alle Aliases)

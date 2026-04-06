@@ -336,13 +336,13 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           : item.quantity.toStringAsFixed(2);
 
       buffer.writeln('• ${item.coinName}: ${quantityStr}x');
-      buffer.writeln("  ${LanguageService().t('gold_spot')}: ${spotTotal.toStringAsFixed(2)} $selectedCurrency");
-      buffer.writeln("  ${LanguageService().t('gold_dealer')}: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency\n");
+      buffer.writeln("  ${LanguageService().t('gold_spot')}: ${LanguageService().formatAmount(spotTotal)} $selectedCurrency");
+      buffer.writeln("  ${LanguageService().t('gold_dealer')}: ${LanguageService().formatAmount(dealerTotal)} $selectedCurrency\n");
     }
 
     buffer.writeln('━━━━━━━━━━━━━━━━');
-    buffer.writeln("${LanguageService().t('gold_total_spot')}: ${totalSpot.toStringAsFixed(2)} $selectedCurrency");
-    buffer.writeln("${LanguageService().t('gold_total_dealer')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency");
+    buffer.writeln("${LanguageService().t('gold_total_spot')}: ${LanguageService().formatAmount(totalSpot)} $selectedCurrency");
+    buffer.writeln("${LanguageService().t('gold_total_dealer')}: ${LanguageService().formatAmount(totalDealer)} $selectedCurrency");
     buffer.writeln("\n📱 ${LanguageService().t('gold_created_with')}");
 
     // Haptic Feedback
@@ -414,11 +414,11 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                   contentPadding: EdgeInsets.zero,
                   title: Text('${qty}× ${LanguageService().translateCoin(item.coinName)}'),
                   subtitle: Text(
-                    '${l.t('zakat_basis')}: ${dealer.toStringAsFixed(2)} $selectedCurrency',
+                    '${l.t('zakat_basis')}: ${l.formatAmount(dealer)} $selectedCurrency',
                     style: const TextStyle(fontSize: 11),
                   ),
                   trailing: Text(
-                    '${zakat.toStringAsFixed(2)} $selectedCurrency',
+                    '${l.formatAmount(zakat)} $selectedCurrency',
                     style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                 );
@@ -432,7 +432,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '${totalZakat.toStringAsFixed(2)} $selectedCurrency',
+                    '${l.formatAmount(totalZakat)} $selectedCurrency',
                     style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ],
@@ -687,10 +687,10 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            '${l.t('gold_spot')}: ${spotTotal.toStringAsFixed(2)} $selectedCurrency',
+                            '${l.t('gold_spot')}: ${l.formatAmount(spotTotal)} $selectedCurrency',
                           ),
                           Text(
-                            '${l.t('gold_dealer')}: ${dealerTotal.toStringAsFixed(2)} $selectedCurrency',
+                            '${l.t('gold_dealer')}: ${l.formatAmount(dealerTotal)} $selectedCurrency',
                           ),
                         ],
                       ),
@@ -703,11 +703,11 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
           const SizedBox(height: 16),
 
           Text(
-            '${l.t('gold_total_spot')}: ${totalSpot.toStringAsFixed(2)} $selectedCurrency',
+            '${l.t('gold_total_spot')}: ${l.formatAmount(totalSpot)} $selectedCurrency',
             style: const TextStyle(fontSize: 16),
           ),
           Text(
-            '${l.t('gold_total_dealer')}: ${totalDealer.toStringAsFixed(2)} $selectedCurrency',
+            '${l.t('gold_total_dealer')}: ${l.formatAmount(totalDealer)} $selectedCurrency',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
 

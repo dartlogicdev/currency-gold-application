@@ -10,6 +10,50 @@ import 'language_service.dart';
 
 // Währungsnamen werden lokalisiert aus LanguageService.getCurrencyName() bezogen.
 
+// Währungssymbole
+const Map<String, String> currencySymbols = {
+  'EUR': '€',
+  'USD': '\$',
+  'GBP': '£',
+  'CHF': 'Fr.',
+  'JPY': '¥',
+  'CNY': '¥',
+  'TRY': '₺',
+  'RUB': '₽',
+  'INR': '₹',
+  'BRL': 'R\$',
+  'ZAR': 'R',
+  'AUD': 'A\$',
+  'CAD': 'C\$',
+  'NZD': 'NZ\$',
+  'SGD': 'S\$',
+  'HKD': 'HK\$',
+  'KRW': '₩',
+  'MXN': 'Mex\$',
+  'SEK': 'kr',
+  'NOK': 'kr',
+  'DKK': 'kr',
+  'PLN': 'zł',
+  'CZK': 'Kč',
+  'HUF': 'Ft',
+  'RON': 'lei',
+  'BGN': 'лв',
+  'HRK': 'kn',
+  'ISK': 'kr',
+  'THB': '฿',
+  'MYR': 'RM',
+  'IDR': 'Rp',
+  'PHP': '₱',
+  'ILS': '₪',
+  'AED': 'د.إ',
+  'SAR': '﷼',
+  'EGP': '£',
+  'ARS': 'AR\$',
+  'CLP': 'CL\$',
+  'COP': 'CO\$',
+  'PEN': 'S/',
+};
+
 // Währungsflaggen (Unicode Regional Indicator Symbols)
 const Map<String, String> currencyFlags = {
   'EUR': '🇪🇺',
@@ -326,7 +370,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                converted.toStringAsFixed(2),
+                '${LanguageService().formatAmount(converted)} ${currencySymbols[currency] ?? currency}',
                 style: TextStyle(
                   fontSize: 17,
                   fontWeight: isFavorite ? FontWeight.w600 : FontWeight.normal,
