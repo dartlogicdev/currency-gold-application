@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:home_widget/home_widget.dart';
 import 'config.dart';
 import 'haptic_service.dart';
 import 'language_service.dart';
@@ -285,6 +286,11 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('rates', jsonEncode(rates));
+
+        // Widget-Daten aktualisieren
+        await _updateHomeWidget(rates, lastUpdateDate);
+        // Goldpreis im Hintergrund nachladen (kein await, blockiert nicht)
+        unawaited(_fetchGoldForWidget(prefs));
       }
     } catch (e) {
       debugPrint('Currency Fetch Fehler: $e');
@@ -306,6 +312,66 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
         );
       }
     }
+  }
+
+  Future<void> _fetchGoldForWidget(SharedPreferences prefs) async {
+    try {
+      final res = await http
+          .get(Uri.parse(Config.goldEndpoint))
+          .timeout(Config.requestTimeout);
+      final data = jsonDecode(res.body);
+      final goldUsdData = data['coins']?['Gold (1g)']?['USD'];
+      if (goldUsdData != null) {
+        final double goldPriceUsd =
+            (goldUsdData['spot'] as num?)?.toDouble() ?? 0.0;
+        if (goldPriceUsd > 0) {
+          await prefs.setDouble('gold_price_usd', goldPriceUsd);
+          if (rates.isNotEmpty) {
+            await _updateHomeWidget(rates, lastUpdateDate);
+          }
+        }
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _updateHomeWidget(Map<String, double> r, String? date) async {
+    final prefs = await SharedPreferences.getInstance();
+    final baseCurrency = prefs.getString('widget_base_currency') ?? 'EUR';
+
+    // Die 3 Paare: alle aus [EUR, USD, TRY, GBP, CHF] außer der Basiswährung
+    const allCurrencies = ['EUR', 'USD', 'TRY', 'GBP', 'CHF'];
+    final pairs = allCurrencies.where((c) => c != baseCurrency).take(3).toList();
+    final baseRate = r[baseCurrency] ?? 1.0;
+
+    for (int i = 0; i < 3; i++) {
+      final currency = pairs[i];
+      await HomeWidget.saveWidgetData<String>('pair${i + 1}_label', '$baseCurrency/$currency');
+      await HomeWidget.saveWidgetData<String>('pair${i + 1}_value', _fmt(r[currency], baseRate));
+    }
+
+    // Goldpreis in der Basiswährung
+    final goldUsd = prefs.getDouble('gold_price_usd') ?? 0.0;
+    if (goldUsd > 0 && (r['USD'] ?? 0) > 0) {
+      final goldInBase = goldUsd * baseRate / (r['USD'] ?? 1.0);
+      const symbols = {'EUR': '€', 'USD': '\$', 'TRY': '₺', 'GBP': '£', 'CHF': 'Fr'};
+      final symbol = symbols[baseCurrency] ?? baseCurrency;
+      await HomeWidget.saveWidgetData<String>('gold_label', '🥇 Gold/g ($baseCurrency)');
+      await HomeWidget.saveWidgetData<String>('gold_value', '$symbol${goldInBase.toStringAsFixed(2)}');
+    } else {
+      await HomeWidget.saveWidgetData<String>('gold_label', '🥇 Gold/g');
+      await HomeWidget.saveWidgetData<String>('gold_value', '-');
+    }
+
+    await HomeWidget.saveWidgetData<String>('widget_date', date ?? '');
+    await HomeWidget.updateWidget(
+      androidName: 'CurrencyWidgetProvider',
+      iOSName: 'CurrencyWidget',
+    );
+  }
+
+  String _fmt(double? rate, double base) {
+    if (rate == null || base == 0) return '-';
+    return (rate / base).toStringAsFixed(4);
   }
 
   Widget rateRow(String currency) {

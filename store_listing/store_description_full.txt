@@ -1,6 +1,6 @@
 💰 KARATEXCHANGE – Dein smarter Begleiter für Währungen, Gold & Silber
 
-Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jederzeit, überall und ohne Werbung. KaratExchange kombiniert präzise Wechselkurse der Europäischen Zentralbank mit aktuellen Edelmetallpreisen in einer eleganten, mehrsprachigen App.
+Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jederzeit, überall, schnell und zuverlässig. KaratExchange kombiniert präzise Wechselkurse der Europäischen Zentralbank mit aktuellen Edelmetallpreisen in einer eleganten, mehrsprachigen App.
 
 
 ✨ HAUPTFEATURES
@@ -36,12 +36,13 @@ Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jede
 • Pull-to-Refresh für manuelle Aktualisierung
 • Haptisches Feedback einstellbar (aus / leicht / voll)
 • Responsive Design für alle Bildschirmgrößen
+• Home-Screen Widget: Wechselkurse & Goldpreis direkt auf dem Startbildschirm
 
 🔒 DATENSCHUTZ & SICHERHEIT
 • 100% DSGVO-konform: Alle Daten bleiben lokal auf deinem Gerät
 • Keine Cloud, keine Registrierung, keine persönlichen Daten
 • Verschlüsselte HTTPS-Verbindungen zu unseren Servern
-• Keine Werbung, keine Tracker
+• Werbebanner via Google AdMob (kein Tracking deines Nutzungsverhaltens)
 
 📡 DATENQUELLEN
 • Währungen: Europäische Zentralbank (EZB) via Frankfurter API
@@ -66,7 +67,6 @@ Behalte den Überblick über globale Währungen, Gold- und Silberpreise – jede
 • Export-Funktion für Warenkorb-Kalkulationen
 • Platin & Palladium
 • Push-Benachrichtigungen bei wichtigen Kursänderungen
-• Widget für den Startbildschirm
 
 
 💡 WARUM KARATEXCHANGE?

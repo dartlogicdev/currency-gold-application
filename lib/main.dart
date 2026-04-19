@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:home_widget/home_widget.dart';
 import 'currency_tab.dart';
 import 'gold_tab.dart';
 import 'debug_mode_check.dart';
@@ -32,6 +32,9 @@ void main() async {
 
   // Initialisiere AdMob
   await initAdMob();
+
+  // Home Widget App Group (iOS)
+  await HomeWidget.setAppGroupId('group.com.karatexchange.app');
 
   runApp(const MyApp());
 }

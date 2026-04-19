@@ -1,5 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'config.dart';
 import 'haptic_service.dart';
@@ -35,13 +38,65 @@ class SettingsTab extends StatefulWidget {
   State<SettingsTab> createState() => _SettingsTabState();
 }
 
-class _SettingsTabState extends State<SettingsTab> {
+class _SettingsTabState extends State<SettingsTab> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   HapticLevel _hapticLevel = HapticLevel.all;
+  String _widgetBaseCurrency = 'EUR';
 
   @override
   void initState() {
     super.initState();
     _loadHapticLevel();
+    _loadWidgetBaseCurrency();
+  }
+
+  Future<void> _loadWidgetBaseCurrency() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _widgetBaseCurrency = prefs.getString('widget_base_currency') ?? 'EUR';
+    });
+  }
+
+  Future<void> _setWidgetBaseCurrency(String currency) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('widget_base_currency', currency);
+    setState(() => _widgetBaseCurrency = currency);
+    HapticService().selection();
+    await _refreshWidget(currency, prefs);
+  }
+
+  Future<void> _refreshWidget(String baseCurrency, SharedPreferences prefs) async {
+    final ratesJson = prefs.getString('rates');
+    if (ratesJson == null) return;
+    try {
+      final decoded = jsonDecode(ratesJson) as Map<String, dynamic>;
+      final r = decoded.map((k, v) => MapEntry(k, (v as num).toDouble()));
+      const allCurrencies = ['EUR', 'USD', 'TRY', 'GBP', 'CHF'];
+      final pairs = allCurrencies.where((c) => c != baseCurrency).take(3).toList();
+      final baseRate = r[baseCurrency] ?? 1.0;
+      for (int i = 0; i < 3; i++) {
+        final c = pairs[i];
+        final val = (baseRate == 0 || r[c] == null)
+            ? '-'
+            : (r[c]! / baseRate).toStringAsFixed(4);
+        await HomeWidget.saveWidgetData<String>('pair${i + 1}_label', '$baseCurrency/$c');
+        await HomeWidget.saveWidgetData<String>('pair${i + 1}_value', val);
+      }
+      final goldUsd = prefs.getDouble('gold_price_usd') ?? 0.0;
+      if (goldUsd > 0 && (r['USD'] ?? 0) > 0) {
+        final goldInBase = goldUsd * baseRate / (r['USD'] ?? 1.0);
+        const symbols = {'EUR': '€', 'USD': '\$', 'TRY': '₺', 'GBP': '£', 'CHF': 'Fr'};
+        final symbol = symbols[baseCurrency] ?? baseCurrency;
+        await HomeWidget.saveWidgetData<String>('gold_label', '🥇 Gold/g ($baseCurrency)');
+        await HomeWidget.saveWidgetData<String>('gold_value', '$symbol${goldInBase.toStringAsFixed(2)}');
+      }
+      await HomeWidget.updateWidget(
+        androidName: 'CurrencyWidgetProvider',
+        iOSName: 'CurrencyWidget',
+      );
+    } catch (_) {}
   }
 
   Future<void> _loadHapticLevel() async {
@@ -73,6 +128,7 @@ class _SettingsTabState extends State<SettingsTab> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final l = LanguageService();
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -271,6 +327,44 @@ class _SettingsTabState extends State<SettingsTab> {
                         widget.onDealerMarkupChanged(val);
                       },
                     ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          // Widget Einstellungen
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      const Icon(Icons.widgets_outlined, size: 24),
+                      const SizedBox(width: 12),
+                      const Text('Widget', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 36),
+                    child: Text('Basiswährung für Home-Screen Widget', style: TextStyle(fontSize: 12)),
+                  ),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 8,
+                    children: ['EUR', 'USD', 'TRY', 'GBP', 'CHF'].map((currency) {
+                      final selected = _widgetBaseCurrency == currency;
+                      return ChoiceChip(
+                        label: Text(currency),
+                        selected: selected,
+                        onSelected: (_) => _setWidgetBaseCurrency(currency),
+                      );
+                    }).toList(),
+                  ),
                 ],
               ),
             ),

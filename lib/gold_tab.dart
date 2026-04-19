@@ -139,7 +139,17 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
       
       // Cache aktualisieren
       await saveGoldToCache(data);
-      
+
+      // Gold-Preis pro Gramm in USD für Widget speichern
+      final goldUsdData = data['coins']?['Gold (1g)']?['USD'];
+      if (goldUsdData != null) {
+        final double goldPriceUsd = (goldUsdData['spot'] as num?)?.toDouble() ?? 0.0;
+        if (goldPriceUsd > 0) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setDouble('gold_price_usd', goldPriceUsd);
+        }
+      }
+
       setState(() {
         coins = Map<String, dynamic>.from(data['coins']);
           if (selectedCoin.isEmpty || !coins.containsKey(selectedCoin)) {
@@ -149,7 +159,7 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
         isCached = data['cached'] as bool?;
         cacheAge = data['cacheAge'] as int?;
         lastFetchTime = DateTime.now().toString().substring(0, 19);
-        
+
         isOffline = false; // Online-Modus bestätigen
         loading = false;
       });
@@ -744,7 +754,6 @@ class _GoldTabState extends State<GoldTab> with AutomaticKeepAliveClientMixin {
               final k = coins[coin]['karat'];
               final data = coins[coin][selectedCurrency] ?? {};
               final spot = ((data['spot'] ?? 0.0) as num).toDouble();
-              final isBilezik = _isBilezikCoin(coin);
               final isCustom = _isCustomJewelryCoin(coin);
               final isGumusTaki = _isGumusTakiCoin(coin);
               final karatColor = k >= 24

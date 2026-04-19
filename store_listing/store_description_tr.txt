@@ -1,6 +1,6 @@
 💰 KARATEXCHANGE – Döviz, Altın & Gümüş için Akıllı Yardımcın
 
-Küresel döviz kurlarını, altın ve gümüş fiyatlarını her zaman, her yerde ve reklamsız takip et. KaratExchange, Avrupa Merkez Bankası'nın kesin döviz kurlarını güncel değerli metal fiyatlarıyla şık ve çok dilli bir uygulamada birleştiriyor.
+Küresel döviz kurlarını, altın ve gümüş fiyatlarını her zaman, her yerde, hızlı ve güvenilir şekilde takip et. KaratExchange, Avrupa Merkez Bankası'nın kesin döviz kurlarını güncel değerli metal fiyatlarıyla şık ve çok dilli bir uygulamada birleştiriyor.
 
 
 ✨ TEMEL ÖZELLİKLER
@@ -36,12 +36,13 @@ Küresel döviz kurlarını, altın ve gümüş fiyatlarını her zaman, her yer
 • Manuel güncelleme için aşağı çekerek yenile
 • Ayarlanabilir titreşim geri bildirimi (kapalı / hafif / tam)
 • Tüm ekran boyutları için duyarlı tasarım
+• Ana ekran widget’ı: Döviz kurları & altın fiyatı doğrudan ana ekranda
 
 🔒 GİZLİLİK & GÜVENLİK
 • %100 GDPR uyumlu: Tüm veriler yalnızca cihazında saklanır
 • Bulut yok, kayıt yok, kişisel veri yok
 • Sunuculara şifreli HTTPS bağlantıları
-• Reklam yok, takip yok
+• Google AdMob aracılığıyla reklam banner’ı (kullanım davranışı takibi yok)
 
 📡 VERİ KAYNAKLARI
 • Dövizler: Avrupa Merkez Bankası (AMB) – Frankfurter API
@@ -66,7 +67,7 @@ Küresel döviz kurlarını, altın ve gümüş fiyatlarını her zaman, her yer
 • Sepet hesaplamaları için dışa aktarma
 • Platin & Paladyum
 • Önemli kur değişikliklerinde anlık bildirimler
-• Ana ekran widget'ı
+
 
 
 💡 NEDEN KARATEXCHANGE?

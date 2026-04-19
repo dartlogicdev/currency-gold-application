@@ -1,7 +1,7 @@
 # Datenschutzerklärung / Privacy Policy
 
 **KaratExchange - Gold & Währungen**  
-**Zuletzt aktualisiert:** 6. April 2026
+**Zuletzt aktualisiert:** 19. April 2026
 
 ## 1. Einleitung
 
@@ -23,13 +23,14 @@ Die App speichert folgende Daten **ausschließlich lokal** auf Ihrem Gerät:
 - **Händleraufschlag-Einstellung:** Ihr konfigurierter Aufschlag (1–5 %)
 - **Zakat-Einstellung:** Ob die Zakat-Berechnung aktiv ist
 - **Spracheinstellung:** Ihre gewählte App-Sprache
+- **Widget-Einstellungen:** Gewählte Basiswährung für das Home-Screen Widget
 - **Nutzungsstatistiken (optional):** 
   - App-Öffnungen
   - Angezeigte Tabs
   - Warenkorb-Aktionen
   - Aktualisierungszeitpunkte
 
-Diese Daten werden **niemals** an externe Server übertragen und verbleiben auf Ihrem Gerät. Sie können jederzeit gelöscht werden, indem Sie die App-Daten in den Android-Einstellungen löschen.
+Diese Daten werden **niemals** an externe Server übertragen und verbleiben auf Ihrem Gerät. Sie können jederzeit gelöscht werden, indem Sie die App-Daten in den Geräteeinstellungen löschen.
 
 ### 2.2 Netzwerk-Anfragen
 
@@ -94,6 +95,7 @@ Die App gibt Daten ausschließlich im folgenden Rahmen weiter:
 
 **Daten löschen:**
 - Android: Einstellungen → Apps → KaratExchange → Speicher → Daten löschen
+- iOS: Einstellungen → Allgemein → iPhone-Speicher → KaratExchange → App löschen
 - Oder: App deinstallieren
 
 ## 6. Sicherheit
@@ -107,11 +109,14 @@ Wir setzen angemessene technische und organisatorische Maßnahmen ein:
 
 ## 7. Berechtigungen
 
-Die App benötigt folgende Android-Berechtigungen:
-
+**Android:**
 - **INTERNET:** Zum Abrufen von Wechselkursen, Goldpreisen und Werbeanzeigen (AdMob)
 - **ACCESS_NETWORK_STATE:** Zur Erkennung der Netzwerkverbindung (Offline-Hinweise)
 - **VIBRATE:** Für haptisches Feedback bei Benutzeraktionen
+
+**iOS:**
+- **App-Tracking-Transparenz (ATT):** Die App fragt nach Ihrer Zustimmung zur Anzeige personalisierter Werbung (Google AdMob). Ohne Zustimmung werden nur nicht-personalisierte Werbeanzeigen gezeigt.
+- **Netzwerkzugriff:** Für Wechselkurse, Goldpreise und Werbeanzeigen
 
 **Keine weiteren Berechtigungen** werden angefordert (kein Standort, keine Kamera, keine Kontakte, etc.).
 
@@ -135,7 +140,7 @@ Die App richtet sich an Nutzer ab 16 Jahren. Wir erfassen wissentlich keine Date
 
 Wir behalten uns vor, diese Datenschutzerklärung bei Bedarf zu aktualisieren. Wesentliche Änderungen werden in der App kommuniziert.
 
-**Letzte Änderung:** 6. April 2026
+**Letzte Änderung:** 19. April 2026
 
 ## 11. Kontakt
 
@@ -165,7 +170,7 @@ Bei Fragen zum Datenschutz können Sie uns kontaktieren:
 - No cloud storage of personal data
 
 **Your Rights:**
-- Delete all data by clearing app data in Android settings
+- Delete all data by clearing app data in Android settings (Settings → Apps → KaratExchange) or via iOS settings (Settings → General → iPhone Storage)
 - Contact us for questions: dartlogic.dev@gmail.com
 
-**Last Updated:** April 6, 2026
+**Last Updated:** April 19, 2026

@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-// Echte AdMob Banner Ad Unit ID
-const String _bannerAdUnitId = 'ca-app-pub-7469061721257322/2524469058';
+// AdMob Banner Ad Unit IDs (platform-specific)
+final String _bannerAdUnitId = Platform.isIOS
+    ? 'ca-app-pub-7469061721257322/3901504609'  // iOS
+    : 'ca-app-pub-7469061721257322/2524469058'; // Android
 
 // Registrierte Testgeräte (Debug-Modus)
 const List<String> _testDeviceIds = ['36B189AE3FD8463BC3F9E080FCEACDF2'];

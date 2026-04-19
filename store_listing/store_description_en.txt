@@ -1,6 +1,6 @@
 💰 KARATEXCHANGE – Your Smart Companion for Currencies, Gold & Silver
 
-Stay on top of global exchange rates and gold & silver prices – anytime, anywhere, completely ad-free. KaratExchange combines precise exchange rates from the European Central Bank with live precious metal prices in one elegant, multilingual app.
+Stay on top of global exchange rates and gold & silver prices – anytime, anywhere, fast and reliable. KaratExchange combines precise exchange rates from the European Central Bank with live precious metal prices in one elegant, multilingual app.
 
 
 ✨ KEY FEATURES
@@ -36,12 +36,13 @@ Stay on top of global exchange rates and gold & silver prices – anytime, anywh
 • Pull-to-refresh for manual updates
 • Adjustable haptic feedback (off / light / full)
 • Responsive design for all screen sizes
+• Home screen widget: Exchange rates & gold price directly on your home screen
 
 🔒 PRIVACY & SECURITY
 • 100% GDPR compliant: All data stays locally on your device
 • No cloud, no account, no personal data collected
 • Encrypted HTTPS connections to our servers
-• No adverts, no trackers
+• Banner ads via Google AdMob (no tracking of your behaviour)
 
 📡 DATA SOURCES
 • Currencies: European Central Bank (ECB) via Frankfurter API
@@ -66,7 +67,6 @@ Stay on top of global exchange rates and gold & silver prices – anytime, anywh
 • Export function for cart calculations
 • Platinum & Palladium
 • Push notifications for significant rate changes
-• Home screen widget
 
 
 💡 WHY KARATEXCHANGE?

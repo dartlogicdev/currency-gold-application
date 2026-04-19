@@ -7,6 +7,6 @@
 ✓ Favoriten-System für Währungen
 ✓ Dark Mode & Light Mode
 ✓ Offline-Modus mit intelligentem Caching
-✓ 100% werbefrei
-✓ DSGVO-konform
+✓ Home-Screen Widget (Android & iOS)
+✓ DSGVO-konform: alle Daten lokal auf dem Gerät
 ✓ Keine Registrierung erforderlich
