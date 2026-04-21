@@ -12,7 +12,5 @@ import SwiftUI
 struct CurrencyWidgetBundle: WidgetBundle {
     var body: some Widget {
         CurrencyWidget()
-        CurrencyWidgetControl()
-        CurrencyWidgetLiveActivity()
     }
 }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -44,6 +45,10 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
         onAdFailedToLoad: (ad, error) {
           debugPrint('[AdMob] Banner failed: $error');
           ad.dispose();
+          // Retry nach 30 Sekunden
+          Future.delayed(const Duration(seconds: 30), () {
+            if (mounted) _loadAd();
+          });
         },
       ),
     )..load();

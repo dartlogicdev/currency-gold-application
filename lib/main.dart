@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:home_widget/home_widget.dart';
@@ -14,29 +15,24 @@ import 'ad_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Zeige Environment Info beim Start
   debugPrint('=== CURRENCY GOLD APP ===');
   debugPrint('Mode: ${Config.isDevelopment ? 'DEVELOPMENT' : 'PRODUCTION'}');
   debugPrint('API URL: ${Config.apiBaseUrl}');
   debugPrint('========================');
 
-  // Tracke App-Start
+  // Initialisierungen, die vor runApp() nötig sind (kurz + unkritisch)
   await AnalyticsService().incrementSessionCount();
-  
-  // Initialisiere HapticService
   await HapticService().init();
-
-  // Initialisiere LanguageService
   await LanguageService().init();
 
-  // Initialisiere AdMob
-  await initAdMob();
-
-  // Home Widget App Group (iOS)
-  await HomeWidget.setAppGroupId('group.com.karatexchange.app');
-
+  // runApp() sofort – keine langen Operationen mehr davor
   runApp(const MyApp());
+
+  // Rest im Hintergrund nach dem ersten Frame
+  await initAdMob();
+  unawaited(HomeWidget.setAppGroupId('group.com.karatexchange.app'));
 }
 
 class MyApp extends StatefulWidget {
