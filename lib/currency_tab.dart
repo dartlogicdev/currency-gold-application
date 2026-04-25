@@ -128,6 +128,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
   final TextEditingController amountController = TextEditingController(
     text: '1',
   );
+  final FocusNode amountFocusNode = FocusNode();
   final TextEditingController searchController = TextEditingController();
   String searchQuery = '';
 
@@ -154,6 +155,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
   void dispose() {
     _currentToast?.remove();
     updateTimer?.cancel();
+    amountFocusNode.dispose();
     searchController.dispose();
     super.dispose();
   }
@@ -506,7 +508,10 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
     // Sicherstellen, dass Dropdown value in Items enthalten ist
     final dropdownValue = allItems.contains(base) ? base : allItems.first;
 
-    return RefreshIndicator(
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      behavior: HitTestBehavior.translucent,
+      child: RefreshIndicator(
       onRefresh: fetchRates,
       child: ListView(
         padding: const EdgeInsets.all(16),
@@ -642,12 +647,15 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
           // Betrag-Eingabe
           TextField(
             controller: amountController,
+            focusNode: amountFocusNode,
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            textInputAction: TextInputAction.done,
             decoration: InputDecoration(
               labelText: '${LanguageService().t('currency_amount')} $base',
               border: const OutlineInputBorder(),
             ),
             onChanged: (_) => setState(() {}),
+            onEditingComplete: () => amountFocusNode.unfocus(),
           ),
           const SizedBox(height: 16),
 
@@ -658,6 +666,7 @@ class _CurrencyTabState extends State<CurrencyTab> with AutomaticKeepAliveClient
           // Restliche Währungen
           ...filteredOtherRates.map((c) => rateRow(c)),
         ],
+      ),
       ),
     );
   }

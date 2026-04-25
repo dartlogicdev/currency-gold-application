@@ -13,6 +13,7 @@ import 'settings_tab.dart';
 import 'haptic_service.dart';
 import 'language_service.dart';
 import 'dart:io';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'ad_service.dart';
 import 'onboarding_screen.dart';
 
@@ -58,14 +59,6 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _loadTheme();
-    // ATT-Dialog erst nach erstem Frame anzeigen (Apple-Requirement für iOS 14+)
-    if (Platform.isIOS) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        requestAttAndReloadAds().catchError((e) {
-          debugPrint('[ATT] Unbehandelter Fehler: $e');
-        });
-      });
-    }
   }
 
   Future<void> _loadTheme() async {
@@ -232,6 +225,81 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         }
       });
     }
+
+    // ATT Pre-Dialog: hier ist Navigator verfügbar (innerhalb MaterialApp)
+    if (Platform.isIOS) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showAttPreDialog().catchError((e) {
+          debugPrint('[ATT] Unbehandelter Fehler: $e');
+        });
+      });
+    }
+  }
+
+  Future<void> _showAttPreDialog() async {
+    final status = await AppTrackingTransparency.trackingAuthorizationStatus;
+    if (status != TrackingStatus.notDetermined) {
+      await requestAttAndReloadAds();
+      return;
+    }
+    if (!mounted) return;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 8),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('🎯', style: TextStyle(fontSize: 48)),
+            const SizedBox(height: 12),
+            const Text(
+              'Personalisierte Werbung',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'KaratExchange ist kostenlos – Werbung hält die App am Leben.\n\n'
+              'Mit deiner Erlaubnis zeigen wir dir relevantere Anzeigen. Du kannst das jederzeit in den iOS-Einstellungen ändern.',
+              style: TextStyle(fontSize: 14, height: 1.5, color: Colors.grey.shade700),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+        actionsAlignment: MainAxisAlignment.center,
+        actionsPadding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+        actions: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              FilledButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  requestAttAndReloadAds();
+                },
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: const Text('Weiter & erlauben', style: TextStyle(fontSize: 16)),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  requestAttAndReloadAds();
+                },
+                child: Text(
+                  'Nicht jetzt',
+                  style: TextStyle(fontSize: 13, color: Colors.grey.shade500),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   @override
