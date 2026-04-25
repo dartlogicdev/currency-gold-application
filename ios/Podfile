@@ -44,4 +44,37 @@ post_install do |installer|
       config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
     end
   end
+
+  # Fix: "executable references an unsupported platform" (90208) beim App Store Upload.
+  # Dart-generierte Frameworks (z. B. objective_c.framework) können einen
+  # arm64-Simulator-Slice enthalten. xcrun vtool schreibt die LC_BUILD_VERSION
+  # von IOSSIMULATOR auf iOS um. minos/sdk werden aus $(IPHONEOS_DEPLOYMENT_TARGET)
+  # gelesen, damit kein Mismatch mit der App-Info.plist entsteht.
+  runner_project_path = File.expand_path('../Runner.xcodeproj', __FILE__)
+  runner_project = Xcodeproj::Project.open(runner_project_path)
+  runner_target = runner_project.targets.find { |t| t.name == 'Runner' }
+
+  strip_script = <<~'SHELL'
+    DEPLOY_TARGET="${IPHONEOS_DEPLOYMENT_TARGET:-13.0}"
+    find "${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}" -name "*.framework" -type d | while read -r framework; do
+      binary="${framework}/$(basename "${framework}" .framework)"
+      [ -f "${binary}" ] || continue
+      if xcrun vtool -show-build "${binary}" 2>/dev/null | grep -qi "IOSSIMULATOR"; then
+        echo "[Strip] Fixing simulator platform in $(basename ${framework}) (minos=${DEPLOY_TARGET})"
+        xcrun vtool -set-build-version ios "${DEPLOY_TARGET}" "${DEPLOY_TARGET}" -replace -arch arm64 \
+          -output "${binary}" "${binary}" || true
+      fi
+    done
+  SHELL
+
+  existing = runner_target.shell_script_build_phases.find { |p| p.name == '[Flutter] Strip Simulator Slices' }
+  if existing
+    existing.shell_script = strip_script
+  else
+    phase = runner_target.new_shell_script_build_phase('[Flutter] Strip Simulator Slices')
+    phase.shell_script = strip_script
+    phase.run_only_for_deployment_postprocessing = '1'
+  end
+
+  runner_project.save
 end

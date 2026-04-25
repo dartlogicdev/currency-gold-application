@@ -269,6 +269,7 @@
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				92102C42F46451BEDADE4B04 /* [CP] Embed Pods Frameworks */,
 				D62956CFA8DC46B9C912221B /* [CP] Copy Pods Resources */,
+				585C6C1EE33FBB9B1B2D61EB /* [Flutter] Strip Simulator Slices */,
 			);
 			buildRules = (
 			);
@@ -433,6 +434,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+		};
+		585C6C1EE33FBB9B1B2D61EB /* [Flutter] Strip Simulator Slices */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Flutter] Strip Simulator Slices";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "DEPLOY_TARGET=\"${IPHONEOS_DEPLOYMENT_TARGET:-13.0}\"\nfind \"${BUILT_PRODUCTS_DIR}/${FRAMEWORKS_FOLDER_PATH}\" -name \"*.framework\" -type d | while read -r framework; do\n  binary=\"${framework}/$(basename \"${framework}\" .framework)\"\n  [ -f \"${binary}\" ] || continue\n  if xcrun vtool -show-build \"${binary}\" 2>/dev/null | grep -qi \"IOSSIMULATOR\"; then\n    echo \"[Strip] Fixing simulator platform in $(basename ${framework}) (minos=${DEPLOY_TARGET})\"\n    xcrun vtool -set-build-version ios \"${DEPLOY_TARGET}\" \"${DEPLOY_TARGET}\" -replace -arch arm64 \\\n      -output \"${binary}\" \"${binary}\" || true\n  fi\ndone\n";
 		};
 		92102C42F46451BEDADE4B04 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;

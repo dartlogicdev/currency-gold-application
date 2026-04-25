@@ -44,12 +44,42 @@ class _SettingsTabState extends State<SettingsTab> with AutomaticKeepAliveClient
 
   HapticLevel _hapticLevel = HapticLevel.all;
   String _widgetBaseCurrency = 'EUR';
+  List<String> _widgetCurrencies = ['USD', 'TRY', 'GBP'];
+
+  static const List<String> _widgetCurrencyPool = [
+    'EUR', 'USD', 'GBP', 'CHF', 'JPY', 'TRY', 'CNY',
+    'AUD', 'CAD', 'SEK', 'NOK', 'PLN', 'AED', 'INR', 'RUB',
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadHapticLevel();
     _loadWidgetBaseCurrency();
+    _loadWidgetCurrencies();
+  }
+
+  Future<void> _loadWidgetCurrencies() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getStringList('widget_currencies');
+    if (stored != null && stored.isNotEmpty) {
+      setState(() => _widgetCurrencies = stored);
+    }
+  }
+
+  void _toggleWidgetCurrency(String currency) async {
+    final newList = List<String>.from(_widgetCurrencies);
+    if (newList.contains(currency)) {
+      if (newList.length > 1) newList.remove(currency);
+    } else {
+      if (newList.length >= 3) newList.removeAt(0);
+      newList.add(currency);
+    }
+    setState(() => _widgetCurrencies = newList);
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('widget_currencies', newList);
+    HapticService().selection();
+    await _refreshWidget(_widgetBaseCurrency, prefs);
   }
 
   Future<void> _loadWidgetBaseCurrency() async {
@@ -62,7 +92,16 @@ class _SettingsTabState extends State<SettingsTab> with AutomaticKeepAliveClient
   Future<void> _setWidgetBaseCurrency(String currency) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('widget_base_currency', currency);
-    setState(() => _widgetBaseCurrency = currency);
+    // Basis-Währung darf nicht gleichzeitig in der Widget-Liste sein
+    var newCurrencies = _widgetCurrencies.where((c) => c != currency).toList();
+    if (newCurrencies.isEmpty) {
+      newCurrencies = [_widgetCurrencyPool.firstWhere((c) => c != currency, orElse: () => 'USD')];
+    }
+    await prefs.setStringList('widget_currencies', newCurrencies);
+    setState(() {
+      _widgetBaseCurrency = currency;
+      _widgetCurrencies = newCurrencies;
+    });
     HapticService().selection();
     await _refreshWidget(currency, prefs);
   }
@@ -73,8 +112,7 @@ class _SettingsTabState extends State<SettingsTab> with AutomaticKeepAliveClient
     try {
       final decoded = jsonDecode(ratesJson) as Map<String, dynamic>;
       final r = decoded.map((k, v) => MapEntry(k, (v as num).toDouble()));
-      const allCurrencies = ['EUR', 'USD', 'TRY', 'GBP', 'CHF'];
-      final pairs = allCurrencies.where((c) => c != baseCurrency).take(3).toList();
+      final pairs = _widgetCurrencies.where((c) => c != baseCurrency).take(3).toList();
       final baseRate = r[baseCurrency] ?? 1.0;
       for (int i = 0; i < 3; i++) {
         final c = pairs[i];
@@ -362,6 +400,23 @@ class _SettingsTabState extends State<SettingsTab> with AutomaticKeepAliveClient
                         label: Text(currency),
                         selected: selected,
                         onSelected: (_) => _setWidgetBaseCurrency(currency),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 16),
+                  const Text('Angezeigte Währungspaare (max. 3)', style: TextStyle(fontSize: 12)),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: _widgetCurrencyPool
+                        .where((c) => c != _widgetBaseCurrency)
+                        .map((currency) {
+                      final selected = _widgetCurrencies.contains(currency);
+                      return FilterChip(
+                        label: Text(currency),
+                        selected: selected,
+                        onSelected: (_) => _toggleWidgetCurrency(currency),
                       );
                     }).toList(),
                   ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:home_widget/home_widget.dart';
 import 'currency_tab.dart';
@@ -11,6 +12,7 @@ import 'theme_service.dart';
 import 'settings_tab.dart';
 import 'haptic_service.dart';
 import 'language_service.dart';
+import 'dart:io';
 import 'ad_service.dart';
 
 void main() async {
@@ -27,11 +29,12 @@ void main() async {
   await HapticService().init();
   await LanguageService().init();
 
-  // runApp() sofort – keine langen Operationen mehr davor
+  // AdMob muss VOR runApp initialisiert sein, damit BannerAdWidget
+  // beim ersten Build bereits laden kann (race condition fix für iOS).
+  await initAdMob();
+
   runApp(const MyApp());
 
-  // Rest im Hintergrund nach dem ersten Frame
-  await initAdMob();
   unawaited(HomeWidget.setAppGroupId('group.com.karatexchange.app'));
 }
 
@@ -53,6 +56,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _loadTheme();
+    // ATT-Dialog erst nach erstem Frame anzeigen (Apple-Requirement für iOS 14+)
+    if (Platform.isIOS) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        requestAttAndReloadAds().catchError((e) {
+          debugPrint('[ATT] Unbehandelter Fehler: $e');
+        });
+      });
+    }
   }
 
   Future<void> _loadTheme() async {
@@ -171,6 +182,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _analytics = AnalyticsService();
+  static const _deepLinkChannel = MethodChannel('karatexchange/deeplink');
   
   // Dynamische Tab-Namen basierend auf sichtbaren Tabs
   List<String> get _tabNames {
@@ -205,6 +217,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         _analytics.trackTabView(tabName);
       }
     });
+
+    if (Platform.isIOS) {
+      _deepLinkChannel.setMethodCallHandler((call) async {
+        if (call.method == 'openConverter') {
+          _tabController.animateTo(0);
+        }
+      });
+    }
   }
 
   @override

@@ -71,10 +71,17 @@ struct CurrencyWidgetEntryView: View {
                         .font(.system(size: 11, weight: .bold))
                         .foregroundColor(.white.opacity(0.9))
                     Spacer()
+                    // Rechner-Button öffnet App via Deep-Link auf Währungs-Tab
+                    Link(destination: URL(string: "karatexchange://converter")!) {
+                        Image(systemName: "dollarsign.circle")
+                            .font(.system(size: 14))
+                            .foregroundColor(Color(red: 1.0, green: 0.84, blue: 0.0))
+                    }
                     if !entry.widgetDate.isEmpty {
                         Text(entry.widgetDate)
                             .font(.system(size: 9))
                             .foregroundColor(.white.opacity(0.5))
+                            .padding(.leading, 4)
                     }
                 }
                 Divider().background(Color.white.opacity(0.2))
