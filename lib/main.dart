@@ -14,6 +14,7 @@ import 'haptic_service.dart';
 import 'language_service.dart';
 import 'dart:io';
 import 'ad_service.dart';
+import 'onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +52,7 @@ class _MyAppState extends State<MyApp> {
   bool _zakatEnabled = false;
   double _dealerMarkup = 4.0;
   bool _dealerMarkupEnabled = true;
+  bool _onboardingDone = true; // true = kein Flash beim Start
 
   @override
   void initState() {
@@ -75,6 +77,7 @@ class _MyAppState extends State<MyApp> {
       _zakatEnabled = prefs.getBool('zakat_enabled') ?? false;
       _dealerMarkup = (prefs.getInt('dealer_markup_percent') ?? 4).toDouble();
       _dealerMarkupEnabled = prefs.getBool('dealer_markup_enabled') ?? true;
+      _onboardingDone = prefs.getBool('onboarding_done') ?? false;
     });
   }
 
@@ -133,18 +136,22 @@ class _MyAppState extends State<MyApp> {
           brightness: Brightness.dark,
         ),
       ),
-      home: HomePage(
-        onThemeChanged: _changeTheme,
-        currentTheme: _themeMode,
-        langCode: _langCode,
-        onLangChanged: _changeLanguage,
-        zakatEnabled: _zakatEnabled,
-        onZakatChanged: _changeZakat,
-        dealerMarkup: _dealerMarkup,
-        dealerMarkupEnabled: _dealerMarkupEnabled,
-        onDealerMarkupChanged: _changeDealerMarkup,
-        onDealerMarkupEnabledChanged: _changeDealerMarkupEnabled,
-      ),
+      home: _onboardingDone
+          ? HomePage(
+              onThemeChanged: _changeTheme,
+              currentTheme: _themeMode,
+              langCode: _langCode,
+              onLangChanged: _changeLanguage,
+              zakatEnabled: _zakatEnabled,
+              onZakatChanged: _changeZakat,
+              dealerMarkup: _dealerMarkup,
+              dealerMarkupEnabled: _dealerMarkupEnabled,
+              onDealerMarkupChanged: _changeDealerMarkup,
+              onDealerMarkupEnabledChanged: _changeDealerMarkupEnabled,
+            )
+          : OnboardingScreen(
+              onDone: () => setState(() => _onboardingDone = true),
+            ),
     );
   }
 }
