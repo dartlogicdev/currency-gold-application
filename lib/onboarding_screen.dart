@@ -15,6 +15,7 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
+  bool _isFinishing = false;
 
   static const int _pageCount = 5;
 
@@ -37,8 +38,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finish() async {
+    if (_isFinishing) return;
+    _isFinishing = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_done', true);
+    if (!mounted) return;
     widget.onDone();
   }
 
